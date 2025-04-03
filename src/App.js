@@ -15,8 +15,9 @@ import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
 import { motion } from 'framer-motion';
+import Confetti from 'react-confetti';
 
-// Custom styled components with new color theme
+// Custom styled components with proper initialization
 const StyledPaper = styled(Paper)(({ theme }) => ({
   borderRadius: '16px',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
@@ -77,6 +78,30 @@ const pulse = keyframes`
   100% { transform: scale(1); box-shadow: 0 0 0 rgba(74, 0, 224, 0.4); }
 `;
 
+// Fireworks animation
+const fireworks = keyframes`
+  0% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% { 
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+`;
+const FireworkParticle = styled.div`
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: ${fireworks} 1.5s ease-out forwards;
+  bottom: 0;
+  will-change: transform, opacity; /* Optimize animations */
+`;
+
 const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
 
@@ -84,26 +109,27 @@ const IncomeTaxCalculator = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
+  // Initialize all input fields with 0 instead of empty string
   const [inputs, setInputs] = useState({
-    totalEarnings: '',
-    hraPaid: '',
-    section80C: '',
-    pf: '',
-    vpf: '',
-    others80C: '',
-    housingLoan: '',
-    chapterVIOthers: '',
-    section80D: '',
-    section80DD: '',
-    section80U: '',
-    section80DDB: '',
-    section80EEA: '',
-    section80EEB: '',
-    section80E: '',
-    section80CCD1B: '',
-    employernps80ccd1b: '',
-    otherIncome: '',
-    fbp: ''
+    totalEarnings: 0,
+    hraPaid: 0,
+    section80C: 0,
+    pf: 0,
+    vpf: 0,
+    others80C: 0,
+    housingLoan: 0,
+    chapterVIOthers: 0,
+    section80D: 0,
+    section80DD: 0,
+    section80U: 0,
+    section80DDB: 0,
+    section80EEA: 0,
+    section80EEB: 0,
+    section80E: 0,
+    section80CCD1B: 0,
+    employernps80ccd1b: 0,
+    otherIncome: 0,
+    fbp: 0
   });
 
   const [results, setResults] = useState(null);
@@ -114,6 +140,29 @@ const IncomeTaxCalculator = () => {
   const [selectedRegime, setSelectedRegime] = useState(null);
   const [autoCalculate, setAutoCalculate] = useState(true);
   const [showSlabs, setShowSlabs] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(false);
+  const [particles, setParticles] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [dimensions, setDimensions] = useState({ 
+    width: typeof window !== 'undefined' ? window.innerWidth : 0, 
+    height: typeof window !== 'undefined' ? window.innerHeight : 0
+  });
+
+  useEffect(() => {
+    console.log('Particles state:', particles);
+    // Only add event listener in browser environment
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        setDimensions({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [particles]);
 
   const inputFields = [
     { label: 'Total Earnings', name: 'totalEarnings' },
@@ -127,21 +176,21 @@ const IncomeTaxCalculator = () => {
 
   // New color theme
   const colors = {
-    primary: '#1976D2',       // Primary blue (Material-UI default)
-    secondary: '#0D47A1',     // Darker blue
-    accent: '#42A5F5',        // Lighter blue
-    background: '#F5F9FF',    // Very light blue background
-    highlight: '#E3F2FD',     // Light blue highlight
-    success: '#4CAF50',       // Green (unchanged)
-    error: '#F44336',         // Red (unchanged)
-    warning: '#FFA726',       // Orange for warnings
-    text: '#263238',          // Dark gray for text
-    lightText: '#607D8B',     // Medium gray for secondary text
-    oldRegime: '#1976D2',     // Blue for old regime
-    newRegime: '#00ACC1',     // Teal for new regime (good contrast)
-    border: '#CFD8DC',        // Light gray for borders
+    primary: '#1976D2',
+    secondary: '#0D47A1',
+    accent: '#42A5F5',
+    background: '#F5F9FF',
+    highlight: '#E3F2FD',
+    success: '#4CAF50',
+    error: '#F44336',
+    warning: '#FFA726',
+    text: '#263238',
+    lightText: '#607D8B',
+    oldRegime: '#1976D2',
+    newRegime: '#00ACC1',
+    border: '#CFD8DC',
     white: '#FFFFFF',
-    darkBlue: '#0D47A1'       // For important accents
+    darkBlue: '#0D47A1'
   };
 
   // Calculate total 80C whenever PF, VPF or Others change
@@ -166,7 +215,7 @@ const IncomeTaxCalculator = () => {
       Number(inputs.section80EEA || 0) + 
       Number(inputs.section80EEB || 0) + 
       Number(inputs.section80E || 0) + 
-      Number(inputs.section80CCD1B || 0)+
+      Number(inputs.section80CCD1B || 0) +
       Number(inputs.employernps80ccd1b || 0);
     
     setInputs(prev => ({
@@ -187,23 +236,43 @@ const IncomeTaxCalculator = () => {
 
   // Auto-calculate tax when inputs change
   useEffect(() => {
-    if (inputs.totalEarnings> 0) {
-    if (autoCalculate && Object.values(inputs).some(val => val !== '')) {
-      const timer = setTimeout(() => {
-        calculateTax();
-      }, 1000); // Debounce for 1 second
+    if (inputs.totalEarnings > 0) {
+      if (autoCalculate && Object.values(inputs).some(val => val !== 0)) {
+        const timer = setTimeout(() => {
+          calculateTax();
+        }, 1000); // Debounce for 1 second
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timer);
+      }
     }
-  }
   }, [inputs, autoCalculate]);
+
+  // Create fireworks particles
+  const createFireworks = () => {
+    const particleCount = 50;
+    const newParticles = Array(particleCount).fill().map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      size: `${Math.random() * 6 + 3}px`,
+      animationDuration: `${Math.random() * 1 + 1}s`,
+      delay: `${Math.random() * 0.5}s`
+    }));
+  
+    setParticles(newParticles);
+    setShowFireworks(true);
+    
+    setTimeout(() => {
+      setShowFireworks(false);
+    }, 1500);
+  };
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
   const handleInputChange = (values, name) => {
-    const value = values.floatValue || '';
+    const value = values.floatValue || 0;
     
     let limitedValue = value;
     switch(name) {
@@ -231,10 +300,9 @@ const IncomeTaxCalculator = () => {
         // No limit for education loan
         limitedValue = value;
         break;
-        case 'employernps80ccd1b':
-          // No limit for education loan
-          limitedValue = value;
-          break;
+      case 'employernps80ccd1b':
+        limitedValue = value;
+        break;
       default:
         limitedValue = value;
     }
@@ -247,34 +315,36 @@ const IncomeTaxCalculator = () => {
 
   const handleClear = () => {
     setInputs({
-      totalEarnings: '',
-      hraPaid: '',
-      section80C: '',
-      pf: '',
-      vpf: '',
-      others80C: '',
-      housingLoan: '',
-      chapterVIOthers: '',
-      section80D: '',
-      section80DD: '',
-      section80U: '',
-      section80DDB: '',
-      section80EEA: '',
-      section80EEB: '',
-      section80E: '',
-      section80CCD1B: '',
-      employernps80ccd1b: '',
-      otherIncome: '',
-      fbp: ''
+      totalEarnings: 0,
+      hraPaid: 0,
+      section80C: 0,
+      pf: 0,
+      vpf: 0,
+      others80C: 0,
+      housingLoan: 0,
+      chapterVIOthers: 0,
+      section80D: 0,
+      section80DD: 0,
+      section80U: 0,
+      section80DDB: 0,
+      section80EEA: 0,
+      section80EEB: 0,
+      section80E: 0,
+      section80CCD1B: 0,
+      employernps80ccd1b: 0,
+      otherIncome: 0,
+      fbp: 0
     });
     setResults(null);
     setError(null);
     setAutoCalculate(false);
+    setShowConfetti(false);
   };
 
   const calculateTax = async () => {
     setLoading(true);
     setError(null);
+    setShowConfetti(false);
     
     try {
       const payload = {
@@ -286,23 +356,36 @@ const IncomeTaxCalculator = () => {
           housingLoan: inputs.housingLoan || 0,
           chapterVIOthers: inputs.chapterVIOthers || 0,
           otherIncome: inputs.otherIncome || 0,
+          employernps80ccd1b: inputs.employernps80ccd1b || 0,
           fbp: inputs.fbp || 0
         }
       };
 
+      // Start timer for minimum 2 seconds loading
+      const startTime = Date.now();
+      
       const response = await axios.post(`${API_BASE_URL}${API_ENDPOINT}`, payload, {
         headers: {
           'Content-Type': 'application/json',
         }
       });
 
-      if (response.data && response.data.success) {
+      // Calculate remaining time to reach 2 seconds
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(1000 - elapsed, 0);
+      
+      // Wait for remaining time if API call was faster than 2 seconds
+      await new Promise(resolve => setTimeout(resolve, remaining));
+
+      if (response?.data?.success) {
         setResults(response.data.data);
+        setShowConfetti(true);
+        setShowFireworks(true);
       } else {
-        throw new Error(response.data?.message || 'Invalid response from server');
+        throw new Error(response?.data?.message || 'Invalid response from server');
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to calculate tax');
+      setError(err?.response?.data?.message || err?.message || 'Failed to calculate tax');
       console.error('Tax calculation error:', err);
     } finally {
       setLoading(false);
@@ -311,6 +394,7 @@ const IncomeTaxCalculator = () => {
   };
 
   const handleOpenBreakup = (regime) => {
+    if (!regime) return;
     setSelectedRegime(regime);
     setOpenBreakup(true);
     setShowSlabs(false);
@@ -342,6 +426,11 @@ const IncomeTaxCalculator = () => {
   };
 
   const renderInputField = () => {
+    const currentField = inputFields[activeTab];
+    if (!currentField || !currentField.name) return null;
+
+    const fieldValue = inputs[currentField.name] || 0;
+
     switch(activeTab) {
       case 0: // Total Earnings
       case 1: // Rent Paid
@@ -351,11 +440,11 @@ const IncomeTaxCalculator = () => {
           <NumericFormat
             customInput={TextField}
             fullWidth
-            label={`${inputFields[activeTab].label} (₹)`}
+            label={`${currentField.label} (₹)`}
             variant="outlined"
-            name={inputFields[activeTab].name}
-            value={inputs[inputFields[activeTab].name]}
-            onValueChange={(values) => handleInputChange(values, inputFields[activeTab].name)}
+            name={currentField.name}
+            value={fieldValue}
+            onValueChange={(values) => handleInputChange(values, currentField.name)}
             thousandSeparator={true}
             InputLabelProps={{ 
               shrink: true,
@@ -424,7 +513,7 @@ const IncomeTaxCalculator = () => {
                 label="PF (₹)"
                 variant="outlined"
                 name="pf"
-                value={inputs.pf}
+                value={inputs.pf || 0}
                 onValueChange={(values) => handleInputChange(values, 'pf')}
                 thousandSeparator={true}
                 fullWidth
@@ -434,7 +523,7 @@ const IncomeTaxCalculator = () => {
                 label="VPF (₹)"
                 variant="outlined"
                 name="vpf"
-                value={inputs.vpf}
+                value={inputs.vpf || 0}
                 onValueChange={(values) => handleInputChange(values, 'vpf')}
                 thousandSeparator={true}
                 fullWidth
@@ -444,7 +533,7 @@ const IncomeTaxCalculator = () => {
                 label="Others (₹)"
                 variant="outlined"
                 name="others80C"
-                value={inputs.others80C}
+                value={inputs.others80C || 0}
                 onValueChange={(values) => handleInputChange(values, 'others80C')}
                 thousandSeparator={true}
                 fullWidth
@@ -452,7 +541,7 @@ const IncomeTaxCalculator = () => {
             </Box>
             <Box p={2} bgcolor={colors.highlight} borderRadius="12px">
               <Typography variant="body1" fontWeight="600">
-                Total 80C: ₹{inputs.section80C.toLocaleString('en-IN')} / ₹1,50,000
+                Total 80C: ₹{(inputs.section80C || 0).toLocaleString('en-IN')} / ₹1,50,000
               </Typography>
             </Box>
           </Box>
@@ -466,7 +555,7 @@ const IncomeTaxCalculator = () => {
               label="Housing Loan (₹)"
               variant="outlined"
               name="housingLoan"
-              value={inputs.housingLoan}
+              value={inputs.housingLoan || 0}
               onValueChange={(values) => handleInputChange(values, 'housingLoan')}
               thousandSeparator={true}
               helperText={`Max limit: ₹2,00,000 (Current: ₹${inputs.housingLoan || 0})`}
@@ -497,7 +586,7 @@ const IncomeTaxCalculator = () => {
                 label="80D - Health Insurance (₹)"
                 variant="outlined"
                 name="section80D"
-                value={inputs.section80D}
+                value={inputs.section80D || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80D')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,00,000"
@@ -520,7 +609,7 @@ const IncomeTaxCalculator = () => {
                 label="80DD - Handicapped Dependents (₹)"
                 variant="outlined"
                 name="section80DD"
-                value={inputs.section80DD}
+                value={inputs.section80DD || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80DD')}
                 thousandSeparator={true}
                 helperText="Max: ₹2,00,000"
@@ -543,7 +632,7 @@ const IncomeTaxCalculator = () => {
                 label="80U - Permanent Disability (₹)"
                 variant="outlined"
                 name="section80U"
-                value={inputs.section80U}
+                value={inputs.section80U || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80U')}
                 thousandSeparator={true}
                 helperText="Max: ₹2,00,000"
@@ -566,7 +655,7 @@ const IncomeTaxCalculator = () => {
                 label="80DDB - Terminal Disease (₹)"
                 variant="outlined"
                 name="section80DDB"
-                value={inputs.section80DDB}
+                value={inputs.section80DDB || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80DDB')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,40,000"
@@ -589,7 +678,7 @@ const IncomeTaxCalculator = () => {
                 label="80EEA - First Home Buyers (₹)"
                 variant="outlined"
                 name="section80EEA"
-                value={inputs.section80EEA}
+                value={inputs.section80EEA || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80EEA')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,50,000"
@@ -612,7 +701,7 @@ const IncomeTaxCalculator = () => {
                 label="80EEB - Electric Vehicle (₹)"
                 variant="outlined"
                 name="section80EEB"
-                value={inputs.section80EEB}
+                value={inputs.section80EEB || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80EEB')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,50,000"
@@ -635,7 +724,7 @@ const IncomeTaxCalculator = () => {
                 label="80E - Education Loan (₹)"
                 variant="outlined"
                 name="section80E"
-                value={inputs.section80E}
+                value={inputs.section80E || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80E')}
                 thousandSeparator={true}
                 helperText="No limit"
@@ -648,7 +737,7 @@ const IncomeTaxCalculator = () => {
                 label="80CCD(1B) - NPS (₹)"
                 variant="outlined"
                 name="section80CCD1B"
-                value={inputs.section80CCD1B}
+                value={inputs.section80CCD1B || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80CCD1B')}
                 thousandSeparator={true}
                 helperText="Max: ₹50,000"
@@ -670,7 +759,7 @@ const IncomeTaxCalculator = () => {
                 label="Employeer - NPS 80CCD(2B) (₹)"
                 variant="outlined"
                 name="employernps80ccd1b"
-                value={inputs.employernps80ccd1b}
+                value={inputs.employernps80ccd1b || 0}
                 onValueChange={(values) => handleInputChange(values, 'employernps80ccd1b')}
                 thousandSeparator={true}
                 helperText=""
@@ -680,7 +769,7 @@ const IncomeTaxCalculator = () => {
             
             <Box p={2} bgcolor={colors.highlight} borderRadius="12px">
               <Typography variant="body1" fontWeight="600">
-                Total Chapter VI A Deductions: ₹{inputs.chapterVIOthers.toLocaleString('en-IN')}
+                Total Chapter VI A Deductions: ₹{(inputs.chapterVIOthers || 0).toLocaleString('en-IN')}
               </Typography>
             </Box>
           </Box>
@@ -702,9 +791,64 @@ const IncomeTaxCalculator = () => {
         padding: isMobile ? '16px' : '24px',
         boxSizing: 'border-box',
         backgroundColor: colors.background,
-        gap: '24px'
+        gap: '24px',
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
+      {/* Confetti effect */}
+      {showConfetti && (
+        <Confetti
+          width={dimensions.width}
+          height={dimensions.height}
+          recycle={false}
+          numberOfPieces={200}
+          gravity={0.3}
+          colors={['#1976D2', '#0D47A1', '#42A5F5', '#4CAF50', '#FFA726']}
+          style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}
+        />
+      )}
+
+{showFireworks && (
+  <Box sx={{
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '100vh',
+    pointerEvents: 'none',
+    zIndex: 9998,
+    overflow: 'hidden'
+  }}>
+    {(particles || []).map((particle, index) => {
+      const safeParticle = {
+        left: particle?.left || `${Math.random() * 100}%`,
+        color: particle?.color || `hsl(${Math.random() * 360}, 100%, 50%)`,
+        size: particle?.size || `${Math.random() * 6 + 3}px`,
+        animationDuration: particle?.animationDuration || `${Math.random() * 1 + 1}s`,
+        delay: particle?.delay || `${Math.random() * 0.5}s`,
+        id: particle?.id || index
+      };
+
+      return (
+        <Box
+          key={`firework-${safeParticle.id}`}
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: safeParticle.left,
+            width: safeParticle.size,
+            height: safeParticle.size,
+            backgroundColor: safeParticle.color,
+            borderRadius: '50%',
+            animation: `${fireworks} ${safeParticle.animationDuration} ease-out ${safeParticle.delay} forwards`,
+          }}
+        />
+      );
+    })}
+  </Box>
+)}
+
       {/* Left Panel - Input Form */}
       <motion.div
         variants={fadeInUp}
@@ -756,7 +900,7 @@ const IncomeTaxCalculator = () => {
               {inputFields.map((field, index) => (
                 <Tab 
                   key={index} 
-                  label={field.label} 
+                  label={field?.label || ''} 
                   sx={{
                     fontWeight: activeTab === index ? '700' : '500',
                     fontSize: '0.9rem',
@@ -788,12 +932,12 @@ const IncomeTaxCalculator = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}>
-                      <span style={{ color: colors.text, fontWeight: '500' }}>{field.label}:</span> 
+                      <span style={{ color: colors.text, fontWeight: '500' }}>{field?.label || ''}:</span> 
                       <span style={{ 
-                        color: inputs[field.name] ? colors.primary : colors.lightText,
+                        color: inputs[field?.name] ? colors.primary : colors.lightText,
                         fontWeight: '600'
                       }}>
-                        {inputs[field.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : 'Not entered'}
+                        {inputs[field?.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : 'Not entered'}
                       </span>
                     </Typography>
                   </Box>
@@ -804,7 +948,7 @@ const IncomeTaxCalculator = () => {
               <PrimaryButton 
                 onClick={calculateTax} 
                 disabled={loading} 
-                style={{ color: '#FFFFFF', marginRight: '8px'}}
+                style={{ color: '#FFFFFF', marginRight: '8px' }}
               >
                 {loading ? (
                   <>
@@ -812,7 +956,7 @@ const IncomeTaxCalculator = () => {
                       size={24} 
                       style={{ 
                         color: '#FFFFFF',
-                        marginRight: '18px' 
+                        marginRight: '8px' 
                       }} 
                     />
                     Calculating...
@@ -904,8 +1048,8 @@ const IncomeTaxCalculator = () => {
                         p={3}
                         sx={{
                           background: results.suggestion === 'OLD' 
-                            ? 'linear-gradient(135deg, #00c853 0%, #b2ff59 100%)'  // Green success gradient
-                            : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
+                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient
+                          : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'OLD' 
                             ? `2px solid ${colors.white}` 
                             : '1px solid #e2e8f0',
@@ -944,7 +1088,7 @@ const IncomeTaxCalculator = () => {
                           fontWeight: '700',
                           color: colors.darkBlue
                         }}>
-                          ₹{results.oldRegime.totalTaxWithCess.toLocaleString('en-IN')}
+                          ₹{results?.oldRegime?.totalTaxWithCess?.toLocaleString('en-IN') || 0}
                         </Typography>
                         <SecondaryButton 
                           size="small"
@@ -972,7 +1116,7 @@ const IncomeTaxCalculator = () => {
                         p={3}
                         sx={{
                           background: results.suggestion === 'NEW' 
-                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient  // Green success gradient  // Green success gradient
+                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient
                           : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'NEW' 
                             ? `2px solid ${colors.white}` 
@@ -1012,7 +1156,7 @@ const IncomeTaxCalculator = () => {
                           fontWeight: '700',
                           color: colors.darkBlue
                         }}>
-                          ₹{results.newRegime.totalTaxWithCess.toLocaleString('en-IN')}
+                          ₹{results?.newRegime?.totalTaxWithCess?.toLocaleString('en-IN') || 0}
                         </Typography>
                         <SecondaryButton 
                           size="small"
@@ -1047,21 +1191,18 @@ const IncomeTaxCalculator = () => {
                         fontWeight: '700',
                         marginBottom: '8px'
                       }}>
-                       You save  <fontSize style={{ 
-                        color: colors.secondary,
-                        fontSize: '30px'
-                      }}>₹{results.savings.toLocaleString('en-IN')}</fontSize>
+                       You save  ₹{results?.savings?.toLocaleString('en-IN') || 0}
                       </Typography>
                       <Typography style={{ fontWeight: '500' }}>
                         <strong>Recommendation:</strong> The{' '}
                         <span style={{ 
                           color: results.suggestion === 'OLD' ? colors.oldRegime : colors.newRegime,
                           fontWeight: '600',
-                          fontSize: '20px',
                           textTransform: 'capitalize'
                         }}>
-                          {results.suggestion.toLowerCase()}
-                          {' '}Tax Regime </span>{' '}Is Better For You
+                          {results.suggestion?.toLowerCase() || ''}
+                        </span>{' '}
+                        Tax Regime Is Better For You
                       </Typography>
                     </Box>
                   </motion.div>
@@ -1096,41 +1237,41 @@ const IncomeTaxCalculator = () => {
       </motion.div>
 
       {/* Tax Breakup Dialog */}
-      <Dialog
-        open={openBreakup}
-        onClose={handleCloseBreakup}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: '16px'
-          }
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+      {selectedRegime && (
+        <Dialog
+          open={openBreakup}
+          onClose={handleCloseBreakup}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: '16px'
+            }
+          }}
         >
-          <DialogTitle sx={{ 
-            backgroundColor: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime,
-            color: 'white',
-            padding: '16px 24px'
-          }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6" sx={{ fontWeight: '600' }}>
-                Detailed Tax Breakup - {selectedRegime === results?.oldRegime ? 'Old Regime' : 'New Regime'}
-              </Typography>
-              <IconButton 
-                onClick={handleCloseBreakup}
-                sx={{ color: 'white' }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-          </DialogTitle>
-          <DialogContent dividers sx={{ padding: 0 }}>
-            {selectedRegime && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <DialogTitle sx={{ 
+              backgroundColor: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime,
+              color: 'white',
+              padding: '16px 24px'
+            }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6" sx={{ fontWeight: '600' }}>
+                  Detailed Tax Breakup - {selectedRegime === results?.oldRegime ? 'Old Regime' : 'New Regime'}
+                </Typography>
+                <IconButton 
+                  onClick={handleCloseBreakup}
+                  sx={{ color: 'white' }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            </DialogTitle>
+            <DialogContent dividers sx={{ padding: 0 }}>
               <Box>
                 <Box p={3}>
                   <Typography variant="subtitle1" sx={{ 
@@ -1147,7 +1288,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>Total Earnings</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime.grossIncome.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.grossIncome?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
@@ -1216,7 +1357,7 @@ const IncomeTaxCalculator = () => {
                         }}>
                           <TableCell>Taxable Income</TableCell>
                           <TableCell align="right">
-                            ₹{selectedRegime.taxableIncome.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.taxableIncome?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -1228,28 +1369,28 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>Rebate u/s 87A</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime.rebate.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.rebate?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>Surcharge</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime.surchargeIncome.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.surchargeIncome?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>Tax + Surcharge</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime.taxIncludingSurchargeIncome.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.taxIncludingSurchargeIncome?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>Education Cess</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime.cess.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.cess?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
@@ -1262,7 +1403,7 @@ const IncomeTaxCalculator = () => {
                         }}>
                           <TableCell>Total Tax Liability</TableCell>
                           <TableCell align="right">
-                            ₹{selectedRegime.totalTaxWithCess.toLocaleString('en-IN')}
+                            ₹{selectedRegime?.totalTaxWithCess?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         <TableRow sx={{ 
@@ -1274,7 +1415,7 @@ const IncomeTaxCalculator = () => {
                         }}>
                           <TableCell>Monthly Tax Liability</TableCell>
                           <TableCell align="right">
-                            ₹{Math.round(selectedRegime.totalTaxWithCess/12).toLocaleString('en-IN')}
+                            ₹{Math.round((selectedRegime?.totalTaxWithCess || 0)/12).toLocaleString('en-IN')}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -1295,7 +1436,7 @@ const IncomeTaxCalculator = () => {
                     </Button>
                   </Box>
                   
-                  {showSlabs && (
+                  {showSlabs && selectedRegime?.taxSlabs && (
                     <Box mt={3}>
                       <Typography variant="subtitle1" sx={{ 
                         fontWeight: '600',
@@ -1322,8 +1463,8 @@ const IncomeTaxCalculator = () => {
                                   '&:nth-of-type(even)': { backgroundColor: colors.highlight }
                                 }}
                               >
-                                <TableCell>{slab.range}</TableCell>
-                                <TableCell align="right">{slab.tax}</TableCell>
+                                <TableCell>{slab?.range || ''}</TableCell>
+                                <TableCell align="right">{slab?.tax || ''}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -1333,22 +1474,23 @@ const IncomeTaxCalculator = () => {
                   )}
                 </Box>
               </Box>
-            )}
-          </DialogContent>
-          <DialogActions sx={{ padding: '16px 24px' }}>
-            <SecondaryButton 
-              onClick={handleCloseBreakup}
-              sx={{
-                color: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime,
-                borderColor: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime
-              }}
-            >
-              Close
-            </SecondaryButton>
-          </DialogActions>
-        </motion.div>
-      </Dialog>
+            </DialogContent>
+            <DialogActions sx={{ padding: '16px 24px' }}>
+              <SecondaryButton 
+                onClick={handleCloseBreakup}
+                sx={{
+                  color: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime,
+                  borderColor: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime
+                }}
+              >
+                Close
+              </SecondaryButton>
+            </DialogActions>
+          </motion.div>
+        </Dialog>
+      )}
     </motion.div>
   );
 };
+
 export default IncomeTaxCalculator;
