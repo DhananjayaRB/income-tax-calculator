@@ -1331,7 +1331,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(+) Other Source Of Income</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.newRegime ? '0' :(inputs.otherIncome || 0).toLocaleString('en-IN')}
+                            ₹{selectedRegime === results?.newRegime ? (inputs.otherIncome || 0).toLocaleString('en-IN') :(inputs.otherIncome || 0).toLocaleString('en-IN')}
                           </TableCell>
                         </TableRow>
                         
