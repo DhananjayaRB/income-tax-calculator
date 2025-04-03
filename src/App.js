@@ -379,8 +379,6 @@ const IncomeTaxCalculator = () => {
 
       if (response?.data?.success) {
         setResults(response.data.data);
-        setShowConfetti(true);
-        setShowFireworks(true);
       } else {
         throw new Error(response?.data?.message || 'Invalid response from server');
       }
@@ -395,6 +393,7 @@ const IncomeTaxCalculator = () => {
 
   const handleOpenBreakup = (regime) => {
     if (!regime) return;
+    setShowConfetti(true);
     setSelectedRegime(regime);
     setOpenBreakup(true);
     setShowSlabs(false);
@@ -402,6 +401,7 @@ const IncomeTaxCalculator = () => {
 
   const handleCloseBreakup = () => {
     setOpenBreakup(false);
+    setShowConfetti(false);
   };
 
   const handle80CButtonClick = (type) => {
@@ -802,9 +802,9 @@ const IncomeTaxCalculator = () => {
           width={dimensions.width}
           height={dimensions.height}
           recycle={false}
-          numberOfPieces={200}
-          gravity={0.3}
-          colors={['#1976D2', '#0D47A1', '#42A5F5', '#4CAF50', '#FFA726']}
+          numberOfPieces={250}
+          gravity={0.1}
+          colors={['#1976D2', '#0D47A1', '#42A5F5', '#4CAF50', '#FFA726','#42A5F5','#800000','#9932cc','#ff4500']}
           style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}
         />
       )}
@@ -952,6 +952,8 @@ const IncomeTaxCalculator = () => {
               >
                 {loading ? (
                   <>
+                  
+
                     <CircularProgress 
                       size={24} 
                       style={{ 
