@@ -1023,15 +1023,6 @@ const IncomeTaxCalculator = () => {
               </Box>
             ) : results ? (
               <>
-                <Typography variant="h5" style={{ 
-                  color: colors.primary,
-                  fontWeight: '700',
-                  marginBottom: '24px',
-                  letterSpacing: '-0.5px'
-                }}>
-                  Tax Results
-                </Typography>
-                
                 <Box mb={4}>
                   <Typography variant="h6" style={{ 
                     color: colors.text,
@@ -1193,18 +1184,26 @@ const IncomeTaxCalculator = () => {
                         fontWeight: '700',
                         marginBottom: '8px'
                       }}>
-                       You save  ₹{results?.savings?.toLocaleString('en-IN') || 0}
+                       You save   <span style={{ 
+                          color: results.suggestion === 'OLD' ? colors.darkBlue : colors.darkBlue,
+                          fontWeight: '700',
+                          fontSize:'25px',
+                          textTransform: 'capitalize'
+                        }}>₹{results?.savings?.toLocaleString('en-IN') || 0}</span>
                       </Typography>
                       <Typography style={{ fontWeight: '500' }}>
                         <strong>Recommendation:</strong> The{' '}
                         <span style={{ 
                           color: results.suggestion === 'OLD' ? colors.oldRegime : colors.newRegime,
                           fontWeight: '600',
+                          fontSize:'20px',
                           textTransform: 'capitalize'
                         }}>
                           {results.suggestion?.toLowerCase() || ''}
+                          {' '}
+                          Tax Regime
                         </span>{' '}
-                        Tax Regime Is Better For You
+                         Is Better For You
                       </Typography>
                     </Box>
                   </motion.div>
