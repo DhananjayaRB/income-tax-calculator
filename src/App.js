@@ -1,7 +1,13 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { Grid } from '@mui/material';
-import styled from 'styled-components';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import DownloadIcon from '@mui/icons-material/Download';
+import Tooltip from '@mui/material/Tooltip';
+import { styled as muiStyled } from '@mui/material/styles';
+import styled from 'styled-components';
+
 
 import { 
   Paper, TextField, Button, Typography, Table, TableBody, 
@@ -29,6 +35,48 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   }
 }));
 
+
+const PrintStyles = styled.div`
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    .printable-area, .printable-area * {
+      visibility: visible;
+    }
+    .printable-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    /* Hide buttons when printing */
+    button {
+      display: none !important;
+    }
+  }
+`;
+const FloatingDownloadButton = muiStyled(IconButton)(({ theme }) => ({
+  position: 'fixed',
+  bottom: theme.spacing(5),
+  right: theme.spacing(15),
+  backgroundColor: theme.palette.primary.main,
+  color: 'white',
+  boxShadow: theme.shadows[6],
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+    boxShadow: theme.shadows[8],
+    transform: 'scale(1.1)',
+  },
+  transition: 'all 0.3s ease',
+  zIndex: 1000,
+  width: 50,
+  height: 50,
+  animation:'blink',
+  '&.Mui-disabled': {
+    backgroundColor: theme.palette.grey[400],
+  }
+}));
 
 const PrimaryButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%)',
@@ -112,8 +160,51 @@ const userid = pathSegments[pathSegments.length - 1];
 
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
+  const printRef = useRef();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
+  const handleDownloadPdf = async () => {
+    try {
+      setLoading(true);
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      if (!printRef.current) {
+        throw new Error('Element not found');
+      }
+  
+      const element = printRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        backgroundColor: '#FFFFFF',
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight,
+        ignoreElements: (el) => el.classList.contains('ignore-on-export')
+      });
+  
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = pdf.internal.pageSize.getWidth();
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save('taxRegimeDetails.pdf');
+      
+      // Optional: Show success message
+      setError(null);
+      setSuccess('PDF downloaded successfully!');
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      setError('Failed to generate PDF. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
   // Initialize all input fields with 0 instead of empty string
   const [inputs, setInputs] = useState({
     totalEarnings: 0,
@@ -138,6 +229,7 @@ const IncomeTaxCalculator = () => {
   });
 
   const [results, setResults] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -1259,7 +1351,8 @@ const IncomeTaxCalculator = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-          >
+          > 
+          <div ref={printRef} style={{ padding: '16px', backgroundColor: 'white' }}>
             <DialogTitle sx={{ 
               backgroundColor: selectedRegime === results?.oldRegime ? colors.oldRegime : colors.newRegime,
               color: 'white',
@@ -1276,6 +1369,8 @@ const IncomeTaxCalculator = () => {
                   <CloseIcon />
                 </IconButton>
               </Box>
+              <Box display="flex" justifyContent="flex-end" mb={2}>
+        </Box>
             </DialogTitle>
             <DialogContent dividers sx={{ padding: 0 }}>
               <Box>
@@ -1492,6 +1587,22 @@ const IncomeTaxCalculator = () => {
                 Close
               </SecondaryButton>
             </DialogActions>
+            </div>
+            {results && (
+  <Tooltip title="Download PDF" placement="left">
+    <FloatingDownloadButton
+      onClick={handleDownloadPdf}
+      disabled={loading}
+      aria-label="Download PDF"
+    >
+      {loading ? (
+        <CircularProgress size={24} color="inherit" />
+      ) : (
+        <DownloadIcon />
+      )}
+    </FloatingDownloadButton>
+  </Tooltip>
+)}
           </motion.div>
         </Dialog>
       )}
