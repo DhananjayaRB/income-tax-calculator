@@ -1346,7 +1346,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) Other Chapter VI A</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.newRegime ? '0' : (inputs.chapterVIOthers || 0).toLocaleString('en-IN')}
+                            ₹{selectedRegime === results?.newRegime ? inputs.employernps80ccd1b : (inputs.chapterVIOthers || 0).toLocaleString('en-IN')}
                           </TableCell>
                         </TableRow>
                         
