@@ -802,8 +802,8 @@ const IncomeTaxCalculator = () => {
           width={dimensions.width}
           height={dimensions.height}
           recycle={false}
-          numberOfPieces={250}
-          gravity={0.1}
+          numberOfPieces={200}
+          gravity={0.2}
           colors={['#1976D2', '#0D47A1', '#42A5F5', '#4CAF50', '#FFA726','#42A5F5','#800000','#9932cc','#ff4500']}
           style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}
         />
@@ -867,7 +867,7 @@ const IncomeTaxCalculator = () => {
                 fontWeight: '700',
                 letterSpacing: '-0.5px'
               }}>
-                Income Tax Calculator
+                Income Tax Calculator (Old vs New Tax Regime)
               </Typography>
               <Button
                 variant="text"
@@ -1025,7 +1025,7 @@ const IncomeTaxCalculator = () => {
               <>
                 <Box mb={4}>
                   <Typography variant="h6" style={{ 
-                    color: colors.text,
+                    color: colors.primary,
                     fontWeight: '600',
                     marginBottom: '16px'
                   }}>
