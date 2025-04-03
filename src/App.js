@@ -804,7 +804,7 @@ const IncomeTaxCalculator = () => {
               <PrimaryButton 
                 onClick={calculateTax} 
                 disabled={loading} 
-                style={{ color: '#FFFFFF', marginRight: '8px' }}
+                style={{ color: '#FFFFFF', marginRight: '8px'}}
               >
                 {loading ? (
                   <>
@@ -812,7 +812,7 @@ const IncomeTaxCalculator = () => {
                       size={24} 
                       style={{ 
                         color: '#FFFFFF',
-                        marginRight: '8px' 
+                        marginRight: '18px' 
                       }} 
                     />
                     Calculating...
@@ -905,7 +905,7 @@ const IncomeTaxCalculator = () => {
                         sx={{
                           background: results.suggestion === 'OLD' 
                             ? 'linear-gradient(135deg, #00c853 0%, #b2ff59 100%)'  // Green success gradient
-                            : 'linear-gradient(123ref, #e2e8f0, #e2e8f0)', // Yellow fallback
+                            : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'OLD' 
                             ? `2px solid ${colors.white}` 
                             : '1px solid #e2e8f0',
@@ -972,8 +972,8 @@ const IncomeTaxCalculator = () => {
                         p={3}
                         sx={{
                           background: results.suggestion === 'NEW' 
-                            ? 'linear-gradient(135deg, #00c853 0%, #b2ff59 100%)'  // Green success gradient
-                            : 'linear-gradient(123ref, #e2e8f0, #e2e8f0)', // Yellow fallback
+                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient  // Green success gradient  // Green success gradient
+                          : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'NEW' 
                             ? `2px solid ${colors.white}` 
                             : '1px solid #e2e8f0',
@@ -1047,18 +1047,21 @@ const IncomeTaxCalculator = () => {
                         fontWeight: '700',
                         marginBottom: '8px'
                       }}>
-                        You save ₹{results.savings.toLocaleString('en-IN')}
+                       You save  <fontSize style={{ 
+                        color: colors.secondary,
+                        fontSize: '30px'
+                      }}>₹{results.savings.toLocaleString('en-IN')}</fontSize>
                       </Typography>
                       <Typography style={{ fontWeight: '500' }}>
                         <strong>Recommendation:</strong> The{' '}
                         <span style={{ 
                           color: results.suggestion === 'OLD' ? colors.oldRegime : colors.newRegime,
                           fontWeight: '600',
+                          fontSize: '20px',
                           textTransform: 'capitalize'
                         }}>
                           {results.suggestion.toLowerCase()}
-                        </span>{' '}
-                        Tax Regime Is Better For You
+                          {' '}Tax Regime </span>{' '}Is Better For You
                       </Typography>
                     </Box>
                   </motion.div>
