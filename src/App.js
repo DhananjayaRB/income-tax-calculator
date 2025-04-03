@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Grid } from '@mui/material';
 import styled from 'styled-components';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 import { 
   Paper, TextField, Button, Typography, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, Box, 
@@ -27,6 +28,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     boxShadow: '0 12px 48px rgba(0, 0, 0, 0.15)'
   }
 }));
+
 
 const PrimaryButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%)',
@@ -104,6 +106,9 @@ const FireworkParticle = styled.div`
 
 const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
+
+const pathSegments = window.location.pathname.split("/");
+const userid = pathSegments[pathSegments.length - 1]; 
 
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
@@ -357,7 +362,8 @@ const IncomeTaxCalculator = () => {
           chapterVIOthers: inputs.chapterVIOthers || 0,
           otherIncome: inputs.otherIncome || 0,
           employernps80ccd1b: inputs.employernps80ccd1b || 0,
-          fbp: inputs.fbp || 0
+          fbp: inputs.fbp || 0,
+          userids :userid ||0
         }
       };
 
@@ -398,7 +404,6 @@ const IncomeTaxCalculator = () => {
     setOpenBreakup(true);
     setShowSlabs(false);
   };
-
   const handleCloseBreakup = () => {
     setOpenBreakup(false);
     setShowConfetti(false);
@@ -1041,7 +1046,7 @@ const IncomeTaxCalculator = () => {
                         p={3}
                         sx={{
                           background: results.suggestion === 'OLD' 
-                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient
+                          ? 'linear-gradient(135deg, #ace1af  0%, #74c365 100%)'  // Green success gradient
                           : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'OLD' 
                             ? `2px solid ${colors.white}` 
@@ -1109,7 +1114,7 @@ const IncomeTaxCalculator = () => {
                         p={3}
                         sx={{
                           background: results.suggestion === 'NEW' 
-                          ? 'linear-gradient(135deg, #009b7d  0%, #b2ff59 100%)'  // Green success gradient
+                          ? 'linear-gradient(135deg, #ace1af  0%, #74c365 100%)'  // Green success gradient
                           : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'NEW' 
                             ? `2px solid ${colors.white}` 
