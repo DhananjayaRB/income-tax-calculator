@@ -7,7 +7,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Tooltip from '@mui/material/Tooltip';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
-
 import { 
   Paper, TextField, Button, Typography, Table, TableBody, 
   TableCell, TableContainer, TableHead, TableRow, Box, 
@@ -22,8 +21,186 @@ import CloseIcon from '@mui/icons-material/Close';
 import ClearIcon from '@mui/icons-material/Clear';
 import { motion } from 'framer-motion';
 import Confetti from 'react-confetti';
+import CelebrationIcon from '@mui/icons-material/Celebration';
 
-// Custom styled components with proper initialization
+// Animations
+const floatAnimation = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const bounceFade = keyframes`
+  0% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-10px) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 0.8; }
+`;
+
+const pulseGlow = keyframes`
+  0% { transform: scale(1); filter: drop-shadow(0 0 0px #FFD700); }
+  50% { transform: scale(1.1); filter: drop-shadow(0 0 8px #FFD700); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 0px #FFD700); }
+`;
+
+// Usage:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${pulseGlow} 3s ease-in-out infinite`,
+  color: '#FFA500'
+}} />
+
+const rotate3D = keyframes`
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+`;
+
+// Usage:
+<Box sx={{
+  display: 'inline-block',
+  animation: `${rotate3D} 4s linear infinite`,
+  transformStyle: 'preserve-3d'
+}}>
+  <CelebrationIcon sx={{ mr: 1 }} />
+</Box>
+
+const floatShadow = keyframes`
+  0%, 100% { 
+    transform: translateY(0);
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+  }
+  50% { 
+    transform: translateY(-10px);
+    filter: drop-shadow(0 15px 10px rgba(0,0,0,0.3));
+  }
+`;
+
+// Usage:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${floatShadow} 3s ease-in-out infinite`
+}} />
+
+const breathe = keyframes`
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+`;
+
+// Usage:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${breathe} 4s ease-in-out infinite`
+}} />
+
+const confettiBurst = keyframes`
+  0% { transform: scale(0); opacity: 0; }
+  20% { transform: scale(1.2); opacity: 1; }
+  40% { transform: scale(0.9); }
+  60% { transform: scale(1.1); }
+  80% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+// Usage:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${confettiBurst} 1.5s ease-out forwards`,
+  transformOrigin: 'center'
+}} />
+
+const celebrate = keyframes`
+  0% { 
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 0px gold);
+  }
+  25% { 
+    transform: translateY(-8px) rotate(5deg) scale(1.05);
+    filter: drop-shadow(0 0 5px gold);
+  }
+  50% { 
+    transform: translateY(-5px) rotate(-5deg) scale(1.1);
+    filter: drop-shadow(0 0 10px gold);
+  }
+  75% { 
+    transform: translateY(-8px) rotate(5deg) scale(1.05);
+    filter: drop-shadow(0 0 5px gold);
+  }
+  100% { 
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 0px gold);
+  }
+`;
+
+// Usage:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${celebrate} 2s ease-in-out infinite`,
+  color: '#FFD700'
+}} />
+
+// Add to your animations section
+const celebrateIcon = keyframes`
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 0px rgba(255, 215, 0, 0.5));
+  }
+  25% { 
+    transform: translateY(-6px) rotate(5deg) scale(1.08);
+    filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.7));
+  }
+  50% { 
+    transform: translateY(-3px) rotate(-5deg) scale(1.12);
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.9));
+  }
+  75% { 
+    transform: translateY(-6px) rotate(5deg) scale(1.08);
+    filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.7));
+  }
+`;
+
+// In your WelcomeCard component:
+<CelebrationIcon sx={{
+  mr: 1,
+  animation: `${celebrateIcon} 2.5s ease-in-out infinite`,
+  color: '#FFD700',
+  fontSize: '2.5rem'
+}} />
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
+
+const pulse = keyframes`
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(74, 0, 224, 0.4); }
+  70% { transform: scale(1.03); box-shadow: 0 0 20px rgba(74, 0, 224, 0.6); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(74, 0, 224, 0.4); }
+`;
+
+const fireworks = keyframes`
+  0% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.8;
+  }
+  100% { 
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+`;
+
+// Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
   borderRadius: '16px',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
@@ -33,6 +210,37 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     boxShadow: '0 12px 48px rgba(0, 0, 0, 0.15)'
   }
 }));
+
+const WelcomeCard = muiStyled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  borderRadius: '16px',
+  background: 'linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%)',
+  color: 'white',
+  position: 'relative',
+  overflow: 'hidden',
+  boxShadow: '0 8px 32px rgba(74, 0, 224, 0.3)',
+  '&:before': {
+    content: '""',
+    position: 'absolute',
+    top: '-50%',
+    left: '-50%',
+    width: '200%',
+    height: '200%',
+    background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)',
+    animation: `${floatAnimation} 8s infinite linear`,
+  }
+}));
+
+const FireworkParticle = styled.div`
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  animation: ${fireworks} 1.5s ease-out forwards;
+  bottom: 0;
+  will-change: transform, opacity;
+`;
 
 const PrintStyles = styled.div`
   @media print {
@@ -48,12 +256,12 @@ const PrintStyles = styled.div`
       top: 0;
       width: 100%;
     }
-    /* Hide buttons when printing */
     button {
       display: none !important;
     }
   }
 `;
+
 const FloatingDownloadButton = muiStyled(IconButton)(({ theme }) => ({
   position: 'fixed',
   bottom: theme.spacing(5),
@@ -110,46 +318,6 @@ const SecondaryButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-// Custom animations
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
-};
-
-const pulse = keyframes`
-  0% { transform: scale(1); box-shadow: 0 0 0 rgba(74, 0, 224, 0.4); }
-  70% { transform: scale(1.03); box-shadow: 0 0 20px rgba(74, 0, 224, 0.6); }
-  100% { transform: scale(1); box-shadow: 0 0 0 rgba(74, 0, 224, 0.4); }
-`;
-
-// Fireworks animation
-const fireworks = keyframes`
-  0% { 
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  70% {
-    opacity: 0.8;
-  }
-  100% { 
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
-`;
-const FireworkParticle = styled.div`
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  animation: ${fireworks} 1.5s ease-out forwards;
-  bottom: 0;
-  will-change: transform, opacity; /* Optimize animations */
-`;
-
 const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
 const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
@@ -157,14 +325,12 @@ const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 const pathSegments = window.location.pathname.split("/");
 const userid = pathSegments[pathSegments.length - 1]; 
 
-
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
   const printRef = useRef();
   const employeeName="";
   const employeeNumber="";
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
   const dateIn = new Date().toLocaleString('en-IN', {
     timeZone: 'Asia/Kolkata',
     year: 'numeric',
@@ -270,6 +436,7 @@ pdf.save(filename);
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showWelcome, setShowWelcome] = useState(true);
   const [openBreakup, setOpenBreakup] = useState(false);
   const [selectedRegime, setSelectedRegime] = useState(null);
   const [autoCalculate, setAutoCalculate] = useState(true);
@@ -336,7 +503,7 @@ pdf.save(filename);
     { label: 'Housing Loan', name: 'housingLoan' },
     { label: 'Other Chapter VI A', name: 'chapterVIOthers' },
     { label: 'Other Sources Income', name: 'otherIncome' },
-    { label: 'FBP', name: 'fbp' }
+    inputs.fbp.length > 0 && { label: "FBP", name: 'fbp'}
   ];
 
   // New color theme
@@ -431,6 +598,11 @@ pdf.save(filename);
       setShowFireworks(false);
     }, 1500);
   };
+
+  const handleContinue = () => {
+    setShowWelcome(false);
+  };
+
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -575,7 +747,7 @@ pdf.save(filename);
 
   const handleOpenBreakup = (regime) => {
     if (!regime) return;
-    setShowConfetti(true);
+    setShowConfetti(false);
     setSelectedRegime(regime);
     setOpenBreakup(true);
     setShowSlabs(false);
@@ -617,7 +789,6 @@ pdf.save(filename);
       fbp: updatedFBP
     }));
   };
-
   const renderInputField = () => {
     const currentField = inputFields[activeTab];
     if (!currentField || !currentField.name) return null;
@@ -699,7 +870,7 @@ pdf.save(filename);
                               <>
                                 <span>Max: ₹{item.maxLimit.toLocaleString('en-IN')}</span>
                                 <br />
-                                <span>Allowed Regimes: {item.allowedTaxRegime === 3 ? 'Both' : item.allowedTaxRegime === 1 ? 'Old Regime' : 'New Regime'}</span>
+                                <span>Allowed Regimes: {item.allowedTaxRegime === 3 || item.allowedTaxRegime === 0 ? 'Both' : item.allowedTaxRegime === 1 ? 'Old Regime' : 'New Regime'}</span>
                               </>
                             }
                             InputLabelProps={{ 
@@ -781,7 +952,6 @@ pdf.save(filename);
                 variant="outlined"
                 name="pf"
                 value={inputs.pf || 0}
-                onValueChange={(values) => handleInputChange(values, 'pf')}
                 thousandSeparator={true}
                 decimalScale={0}
                 fullWidth
@@ -1064,6 +1234,7 @@ pdf.save(filename);
   };
 
   return (
+    
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -1080,6 +1251,106 @@ pdf.save(filename);
         overflow: 'hidden'
       }}
     >
+      {/* Welcome Section */}
+    {showWelcome && (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.9 }}
+        style={{ 
+          width: '100%', 
+          marginBottom: '20px',
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
+        <WelcomeCard>
+          <Box position="relative" zIndex={1}>
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+              <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
+              Welcome, {employee?.employeeName} ({employee?.employeeNumber})
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, fontSize: '0.9rem' }}>
+              Here's your personalized tax planning dashboard for FY 2025-26
+            </Typography>
+          </Box>
+          
+          <Box sx={{ 
+  backgroundColor: 'rgba(255,255,255,0.15)', 
+  p: 2, 
+  borderRadius: '12px',
+  backdropFilter: 'blur(5px)'
+}}>
+  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Key 2025 Budget Changes:</Typography>
+  
+  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1, color: '#e3f2fd' }}>
+    New vs. Old Regime (Effective April 1, 2025)
+  </Typography>
+  
+  <Box component="ul" sx={{ pl: 2, '& li': { mb: 1, fontSize: '0.9rem' } }}>
+    <li><strong>New Regime Default:</strong> Now auto-selected with revised slabs</li>
+    <li><strong>Standard Deduction:</strong> ₹75,000 (↑ from ₹50K) in New Regime</li>
+    <li><strong>Rebate u/s 87A:</strong> ₹60K for income ≤ ₹12L (New Regime)</li>
+    <Box>
+    <li><strong>Tax Slabs (Old Regime):</strong>
+      <Box component="ul" sx={{ pl: 2, '& li': { mb: 0.5, fontSize: '0.8rem' } }}>
+        <li>Up to ₹2,50,000 (0%)</li>
+        <li>₹2,50,001 for ₹5,00,000 (5%)</li>
+        <li>₹5,00,001 for ₹10,00,000 (20%)</li>
+        <li>Above ₹10,00,001 (30%)</li>
+      </Box>
+    </li>
+    <li><strong>Tax Slabs (New Regime):</strong>
+    <Box component="ul" sx={{ pl: 2, '& li': { mb: 0.5, fontSize: '0.8rem' } }}>
+        <li>Up to ₹4,00,000 (0%)</li>
+        <li>₹4,00,001 for ₹8,00,000 (5%)</li>
+        <li>₹8,00,001 for ₹12,00,000 (10%)</li>
+        <li>₹12,00,001 for ₹16,00,000 (15%)</li>
+        <li>₹16,00,001 for ₹20,00,000 (20%)</li>
+        <li>₹20,00,001 for ₹24,00,000 (25%)</li>
+        <li>Above 24,00,000 (30%)</li>
+      </Box>
+    </li>
+    </Box>
+    <li><strong>Surcharge:</strong> Reduced to 25% (from 37%) for income > ₹5Cr</li>
+    <li><strong>Leave Encashment:</strong> ₹25L exemption for both regimes (↑ from ₹3L)</li>
+  </Box>
+  
+  <Button 
+    variant="contained" 
+    onClick={() => {
+    handleContinue(); 
+  }}
+    sx={{ 
+      mt: 2,
+      backgroundColor: colors.warning, 
+      '&:hover': { backgroundColor: '#388e3c' },
+      fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
+    }}>
+      Continue to Tax Comparisio
+  </Button>
+</Box>
+        </WelcomeCard>
+      </motion.div>
+    )}
+     {!showWelcome && (
+       <motion.div
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       transition={{ duration: 0.5 }}
+       style={{ 
+         display: 'flex',
+         flexDirection: isMobile ? 'column' : 'row',
+         minHeight: '100vh',
+         padding: isMobile ? '16px' : '24px',
+         boxSizing: 'border-box',
+         backgroundColor: colors.background,
+         gap: '24px',
+         position: 'relative',
+         overflow: 'hidden'
+       }}
+     >
       {/* Confetti effect */}
       {showConfetti && (
         <Confetti
@@ -1093,46 +1364,6 @@ pdf.save(filename);
         />
       )}
 
-{showFireworks && (
-  <Box sx={{
-    position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '100vh',
-    pointerEvents: 'none',
-    zIndex: 9998,
-    overflow: 'hidden'
-  }}>
-    {(particles || []).map((particle, index) => {
-      const safeParticle = {
-        left: particle?.left || `${Math.random() * 100}%`,
-        color: particle?.color || `hsl(${Math.random() * 360}, 100%, 50%)`,
-        size: particle?.size || `${Math.random() * 6 + 3}px`,
-        animationDuration: particle?.animationDuration || `${Math.random() * 1 + 1}s`,
-        delay: particle?.delay || `${Math.random() * 0.5}s`,
-        id: particle?.id || index
-      };
-
-      return (
-        <Box
-          key={`firework-${safeParticle.id}`}
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: safeParticle.left,
-            width: safeParticle.size,
-            height: safeParticle.size,
-            backgroundColor: safeParticle.color,
-            borderRadius: '50%',
-            animation: `${fireworks} ${safeParticle.animationDuration} ease-out ${safeParticle.delay} forwards`,
-          }}
-        />
-      );
-    })}
-  </Box>
-)}
-
       {/* Left Panel - Input Form */}
       <motion.div
         variants={fadeInUp}
@@ -1143,16 +1374,21 @@ pdf.save(filename);
           flexShrink: 0
         }}
       >
+     
         <StyledPaper elevation={0}>
           <Box p={isMobile ? 2 : 3}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-              <Typography variant="h5" style={{ 
-                color: colors.primary,
-                fontWeight: '700',
-                letterSpacing: '-0.5px'
-              }}>
-                Income Tax Calculator (Old vs New Tax Regime)
-              </Typography>
+            <Box position="relative" zIndex={1}>
+      <Typography 
+      sx={{ mb: 0, fontSize: '1.1rem', color:colors.primary}}>
+        <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
+        Welcome,  {employee?.employeeName} ({employee?.employeeNumber})
+        </Typography>
+       <Typography 
+       sx={{ mb: -1, fontSize: '0.8rem' , color:colors.warning,marginLeft:'30px'}}>
+        Here's your personalized tax planning dashboard for FY 2025-26
+      </Typography>
+      </Box>
               <Button
                 variant="text"
                 startIcon={<ClearIcon />}
@@ -1160,7 +1396,7 @@ pdf.save(filename);
                 style={{
                   color: colors.primary,
                   textTransform: 'none',
-                  fontWeight: '600'
+                  fontWeight: '500'
                 }}
               >
                 Clear All
@@ -1272,7 +1508,6 @@ pdf.save(filename);
                         The application and its providers do not guarantee the accuracy, completeness, or applicability of the results and are not responsible for any discrepancies, errors, or financial decisions made based on this tool.
                         </Typography>
             </Box>
-
             {error && (
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
@@ -1330,14 +1565,6 @@ pdf.save(filename);
             ) : results ? (
               <>
                 <Box mb={4}>
-                  <Typography variant="h6" style={{ 
-                    color: colors.primary,
-                    fontWeight: '600',
-                    marginBottom: '16px'
-                  }}>
-                    Tax Regime Comparison
-                  </Typography>
-                  
                   <Box mb={3}>
                     <motion.div
                       whileHover={{ scale: 1.01 }}
@@ -1479,6 +1706,7 @@ pdf.save(filename);
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                   >
+                    
                     <Box 
                       p={3} 
                       bgcolor={colors.highlight} 
@@ -1490,6 +1718,7 @@ pdf.save(filename);
                         fontWeight: '700',
                         marginBottom: '8px'
                       }}>
+                      <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
                        You save   <span style={{ 
                           color: results.suggestion === 'OLD' ? colors.darkBlue : colors.darkBlue,
                           fontWeight: '700',
@@ -1819,8 +2048,11 @@ pdf.save(filename);
           </motion.div>
         </Dialog>
       )}
+      </motion.div>
+      )}
     </motion.div>
   );
 };
+
 
 export default IncomeTaxCalculator;
