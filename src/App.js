@@ -206,7 +206,30 @@ const IncomeTaxCalculator = () => {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
   
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save('taxRegimeDetails.pdf');
+   
+const now = new Date();
+// Convert to IST
+const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+const istTime = new Date(now.getTime() + istOffset);
+// Format date and time parts
+const pad = (n) => n.toString().padStart(2, '0');
+let hours = istTime.getUTCHours();
+const minutes = pad(istTime.getUTCMinutes());
+const seconds = pad(istTime.getUTCSeconds());
+const day = pad(istTime.getUTCDate());
+const month = pad(istTime.getUTCMonth() + 1);
+const year = istTime.getUTCFullYear();
+// AM/PM logic
+const ampm = hours >= 12 ? 'PM' : 'AM';
+hours = hours % 12 || 12; // convert to 12-hour format
+hours = pad(hours);
+// Final datetime string: YYYYMMDD_HHMMSS_AMPM
+const formattedDateTime = `${year}_${month}_${day}_${hours}_${minutes}_${ampm}`;
+// Clean employee name (remove spaces)
+const cleanName = employee.employeeName.replace(/\s+/g, '');
+// Final filename
+const filename = `${cleanName}_${formattedDateTime}`;
+pdf.save(filename);
       
       // Optional: Show success message
       setError(null);
@@ -295,10 +318,10 @@ const IncomeTaxCalculator = () => {
             vpf: employeeData.vpf || 0,
             employernps80ccd1b: employeeData.npsMaxLimit || 0,
             fbp: employeeData.fbp || [],
-            npsMaxLimitOld:employeeData.npsMaxLimitOld||0,
-            npsMaxLimitNew:employeeData.npsMaxLimitNew||0,
-            employeeName:employeeData.employeeName,
-            employeeNumber:employeeData.employeeNumber
+            npsMaxLimitOld:employee.npsMaxLimitOld||0,
+            npsMaxLimitNew:employee.npsMaxLimitNew||0,
+            employeeName:employee.employeeName,
+            employeeNumber:employee.employeeNumber
           }));
         }
       } catch (error) {
@@ -500,7 +523,7 @@ const IncomeTaxCalculator = () => {
         const amount = item.amount || 0;
         const maxLimit = item.maxLimit || Infinity; // Use Infinity if no maxLimit is specified
         const limitedAmount = Math.min(amount, maxLimit);
-        return sum + limitedAmount;
+        return Math.round(sum + limitedAmount);
       }, 0);
 
       const adjustedFBPDetails = inputs.fbp.map(item => ({
@@ -520,8 +543,8 @@ const IncomeTaxCalculator = () => {
           employernps80ccd1b: inputs.employernps80ccd1b || 0,
           fbp: totalFBP || 0,
           userids: userid || 0,
-          npsMaxLimitOld:npsMaxLimitOld||0,
-          npsMaxLimitNew:npsMaxLimitNew||0,
+          npsMaxLimitOld:employee.npsMaxLimitOld||0,
+          npsMaxLimitNew:employee.npsMaxLimitNew||0,
           fbpDetails: adjustedFBPDetails // Include the full FBP array in the payload
         }
       };
@@ -710,10 +733,10 @@ const IncomeTaxCalculator = () => {
                 </Grid>
                 <Box mt={3} p={2} bgcolor={colors.highlight} borderRadius="12px">
                   <Typography variant="body1" fontWeight="600">
-                    Total FBP Amount: ₹{inputs.fbp.reduce((sum, item) => {
+                    Total FBP Amount: ₹ {inputs.fbp.reduce((sum, item) => {
                       const amount = item.amount || 0;
                       const maxLimit = item.maxLimit || Infinity;
-                      return sum + Math.min(amount, maxLimit);
+                      return Math.round(sum + Math.min(amount, maxLimit));
                     }, 0).toLocaleString('en-IN')}
                   </Typography>
                 </Box>
@@ -1640,7 +1663,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) Other Chapter VI A</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                          ₹{selectedRegime?.chapterVIOthers?.toLocaleString('en-IN') || 0}
+                          ₹{selectedRegime?.chpaterVIOther?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
