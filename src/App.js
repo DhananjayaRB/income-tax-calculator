@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Grid } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import html2canvas from 'html2canvas';
@@ -7,7 +7,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import Tooltip from '@mui/material/Tooltip';
 import { styled as muiStyled } from '@mui/material/styles';
 import styled from 'styled-components';
-
 
 import { 
   Paper, TextField, Button, Typography, Table, TableBody, 
@@ -34,7 +33,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     boxShadow: '0 12px 48px rgba(0, 0, 0, 0.15)'
   }
 }));
-
 
 const PrintStyles = styled.div`
   @media print {
@@ -154,6 +152,7 @@ const FireworkParticle = styled.div`
 
 const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
+const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
 const pathSegments = window.location.pathname.split("/");
 const userid = pathSegments[pathSegments.length - 1]; 
@@ -205,6 +204,7 @@ const IncomeTaxCalculator = () => {
       setLoading(false);
     }
   };
+
   // Initialize all input fields with 0 instead of empty string
   const [inputs, setInputs] = useState({
     totalEarnings: 0,
@@ -225,7 +225,7 @@ const IncomeTaxCalculator = () => {
     section80CCD1B: 0,
     employernps80ccd1b: 0,
     otherIncome: 0,
-    fbp: 0
+    fbp: []
   });
 
   const [results, setResults] = useState(null);
@@ -260,6 +260,38 @@ const IncomeTaxCalculator = () => {
       return () => window.removeEventListener('resize', handleResize);
     }
   }, [particles]);
+
+  // Fetch employee details on component mount
+  useEffect(() => {
+    const fetchEmployeeDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}${EMPLOYEE_DETAILS_ENDPOINT}/${userid}`);
+        
+        if (response.data.success) {
+          const employeeData = response.data.data;
+          
+          // Update the input fields with API response data
+          setInputs(prev => ({
+            ...prev,
+            totalEarnings: employeeData.totalEarnings || 0,
+            pf: employeeData.pf || 0,
+            vpf: employeeData.vpf || 0,
+            employernps80ccd1b: employeeData.npsMaxLimit || 0,
+            fbp: employeeData.fbp || [],
+
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching employee details:', error);
+        setError('Failed to fetch employee details. Using default values.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEmployeeDetails();
+  }, []);
 
   const inputFields = [
     { label: 'Total Earnings', name: 'totalEarnings' },
@@ -430,7 +462,7 @@ const IncomeTaxCalculator = () => {
       section80CCD1B: 0,
       employernps80ccd1b: 0,
       otherIncome: 0,
-      fbp: 0
+      fbp: []
     });
     setResults(null);
     setError(null);
@@ -444,6 +476,19 @@ const IncomeTaxCalculator = () => {
     setShowConfetti(false);
     
     try {
+      // Calculate total FBP amount from the array of FBP items
+      const totalFBP = inputs.fbp.reduce((sum, item) => {
+        const amount = item.amount || 0;
+        const maxLimit = item.maxLimit || Infinity; // Use Infinity if no maxLimit is specified
+        const limitedAmount = Math.min(amount, maxLimit);
+        return sum + limitedAmount;
+      }, 0);
+
+      const adjustedFBPDetails = inputs.fbp.map(item => ({
+        ...item,
+        adjustedAmount: Math.min(item.amount || 0, item.maxLimit || Infinity),
+      }));
+
       const payload = {
         financialYear: '2025-2026',
         incomeDetails: {
@@ -454,8 +499,9 @@ const IncomeTaxCalculator = () => {
           chapterVIOthers: inputs.chapterVIOthers || 0,
           otherIncome: inputs.otherIncome || 0,
           employernps80ccd1b: inputs.employernps80ccd1b || 0,
-          fbp: inputs.fbp || 0,
-          userids :userid ||0
+          fbp: totalFBP || 0,
+          userids: userid || 0,
+          fbpDetails: adjustedFBPDetails // Include the full FBP array in the payload
         }
       };
 
@@ -522,6 +568,18 @@ const IncomeTaxCalculator = () => {
     }));
   };
 
+  const handleFBPChange = (index, value) => {
+    const updatedFBP = [...inputs.fbp];
+    updatedFBP[index] = {
+      ...updatedFBP[index],
+      amount: value.floatValue || 0
+    };
+    setInputs(prev => ({
+      ...prev,
+      fbp: updatedFBP
+    }));
+  };
+
   const renderInputField = () => {
     const currentField = inputFields[activeTab];
     if (!currentField || !currentField.name) return null;
@@ -532,7 +590,6 @@ const IncomeTaxCalculator = () => {
       case 0: // Total Earnings
       case 1: // Rent Paid
       case 5: // Other Sources Income
-      case 6: // FBP
         return (
           <NumericFormat
             customInput={TextField}
@@ -573,6 +630,78 @@ const IncomeTaxCalculator = () => {
             }}
           />
         );
+        case 6: // FBP Tab
+        return (
+          <Box>
+            <Typography variant="body1" color={colors.primary} fontWeight="600" mb={2}>
+              Flexible Benefit Plan (FBP) Components
+            </Typography>
+            {inputs.fbp.length > 0 ? (
+              <Box>
+                <Grid container spacing={3} alignItems="stretch">
+                  {inputs.fbp.map((item, index) => (
+                    <Grid item xs={12} sm={6} key={item.payHeadID}>
+                      <Box 
+                        height="100%"
+                        display="flex"
+                        flexDirection="column"
+                      >
+                        <Box flexGrow={1}>
+                          <NumericFormat
+                            customInput={TextField}
+                            fullWidth
+                            label={`${item.payHeadName} (₹)`}
+                            variant="outlined"
+                            value={item.amount || 0}
+                            onValueChange={(values) => handleFBPChange(index, values)}
+                            thousandSeparator={true}
+                            helperText={
+                              <>
+                                <span>Max: ₹{item.maxLimit.toLocaleString('en-IN')}</span>
+                                <br />
+                                <span>Allowed Regimes: {item.allowedTaxRegime === 3 ? 'Both' : item.allowedTaxRegime === 1 ? 'Old Regime' : 'New Regime'}</span>
+                              </>
+                            }
+                            InputLabelProps={{ 
+                              shrink: true,
+                              style: {
+                              }
+                            }}
+                            InputProps={{
+                              style: {
+                              },
+                              endAdornment: (
+                                <Chip 
+                                  label="Max" 
+                                  size="small" 
+                                  onClick={() => handleFBPChange(index, { floatValue: item.maxLimit })}
+                                  sx={{ cursor: 'pointer' }}
+                                />
+                              )
+                            }}
+                          />
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+                <Box mt={3} p={2} bgcolor={colors.highlight} borderRadius="12px">
+                  <Typography variant="body1" fontWeight="600">
+                    Total FBP Amount: ₹{inputs.fbp.reduce((sum, item) => {
+                      const amount = item.amount || 0;
+                      const maxLimit = item.maxLimit || Infinity;
+                      return sum + Math.min(amount, maxLimit);
+                    }, 0).toLocaleString('en-IN')}
+                  </Typography>
+                </Box>
+              </Box>
+            ) : (
+              <Typography variant="body2" color={colors.lightText}>
+                No FBP components available for this employee.
+              </Typography>
+            )}
+          </Box>
+        );
       case 2: // 80C Tab
         return (
           <Box>
@@ -585,6 +714,7 @@ const IncomeTaxCalculator = () => {
                   variant="outlined" 
                   onClick={() => handle80CButtonClick('pf')}
                   sx={{ textTransform: 'none' }}
+                  disabled
                 >
                   PF (₹{inputs.pf || 0})
                 </Button>
@@ -614,6 +744,7 @@ const IncomeTaxCalculator = () => {
                 onValueChange={(values) => handleInputChange(values, 'pf')}
                 thousandSeparator={true}
                 fullWidth
+                disabled
               />
               <NumericFormat
                 customInput={TextField}
@@ -1034,7 +1165,15 @@ const IncomeTaxCalculator = () => {
                         color: inputs[field?.name] ? colors.primary : colors.lightText,
                         fontWeight: '600'
                       }}>
-                        {inputs[field?.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : 'Not entered'}
+                        {field.name === 'fbp' ? 
+                          `₹${inputs.fbp.reduce((sum, item) => {
+                            const amount = item.amount || 0;
+                            const maxLimit = item.maxLimit || Infinity; // Use the item's maxLimit if available
+                            return sum + Math.min(amount, maxLimit);
+                          }, 0).toLocaleString('en-IN')
+                        }` :
+                          (inputs[field?.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : 'Not entered')
+                        }
                       </span>
                     </Typography>
                   </Box>
@@ -1062,6 +1201,20 @@ const IncomeTaxCalculator = () => {
                   </>
                 ) : 'Calculate Tax'}
               </PrimaryButton>
+              </Box>
+              <Box mt={4} display="flex" justifyContent="center" gap={2}>
+              <Typography variant="body2" style={{ 
+                      display: 'flex',
+                      color:colors.error,
+                      justifyContent: 'space-between',
+                      fontsize: '10px',
+                      alignItems: 'center'
+                    }}>
+                        Disclaimer :
+                        The Tax Calculator feature provided in this application is for informational and comparison purposes only. The calculations generated are based on general tax rules and assumptions and may not reflect the actual tax liability applicable to your specific financial situation.
+                        This tool provides a rough estimate and should not be considered as a final tax computation or a substitute for professional tax advice. Users are advised to consult with a qualified tax professional or refer to official tax regulations to determine their exact tax obligations.
+                        The application and its providers do not guarantee the accuracy, completeness, or applicability of the results and are not responsible for any discrepancies, errors, or financial decisions made based on this tool.
+                        </Typography>
             </Box>
 
             {error && (
@@ -1361,6 +1514,7 @@ const IncomeTaxCalculator = () => {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="h6" sx={{ fontWeight: '600' }}>
                   Detailed Tax Breakup - {selectedRegime === results?.oldRegime ? 'Old Regime' : 'New Regime'}
+                  
                 </Typography>
                 <IconButton 
                   onClick={handleCloseBreakup}
@@ -1396,14 +1550,14 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) FBP Reimbursement</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.newRegime ? '0' : (inputs.fbp || 0).toLocaleString('en-IN')}
+                          ₹{selectedRegime?.fbp?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) Exemptions</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.newRegime ? '0' : (inputs.hraPaid || 0).toLocaleString('en-IN')}
+                            ₹{selectedRegime === results?.newRegime ? '0' : selectedRegime?.hra?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
@@ -1417,7 +1571,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) Professional Tax</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.oldRegime ? '2,400' : '0'}
+                            ₹{selectedRegime?.pt?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
