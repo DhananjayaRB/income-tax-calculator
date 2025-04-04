@@ -163,8 +163,6 @@ const IncomeTaxCalculator = () => {
   const printRef = useRef();
   const employeeName="";
   const employeeNumber="";
-  const npsMaxLimitOld=0;
-  const npsMaxLimitNew=0;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   const dateIn = new Date().toLocaleString('en-IN', {
@@ -317,11 +315,7 @@ pdf.save(filename);
             pf: employeeData.pf || 0,
             vpf: employeeData.vpf || 0,
             employernps80ccd1b: employeeData.npsMaxLimit || 0,
-            fbp: employeeData.fbp || [],
-            npsMaxLimitOld:employee.npsMaxLimitOld||0,
-            npsMaxLimitNew:employee.npsMaxLimitNew||0,
-            employeeName:employee.employeeName,
-            employeeNumber:employee.employeeNumber
+            fbp: employeeData.fbp || []
           }));
         }
       } catch (error) {
@@ -543,8 +537,8 @@ pdf.save(filename);
           employernps80ccd1b: inputs.employernps80ccd1b || 0,
           fbp: totalFBP || 0,
           userids: userid || 0,
-          npsMaxLimitOld:employee.npsMaxLimitOld||0,
-          npsMaxLimitNew:employee.npsMaxLimitNew||0,
+          npsMaxLimitOld:employee.npsMaxLimitOld,
+          npsMaxLimitNew:employee.npsMaxLimitNew,
           fbpDetails: adjustedFBPDetails // Include the full FBP array in the payload
         }
       };
