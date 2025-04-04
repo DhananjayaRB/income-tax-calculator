@@ -157,11 +157,26 @@ const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 const pathSegments = window.location.pathname.split("/");
 const userid = pathSegments[pathSegments.length - 1]; 
 
+
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
   const printRef = useRef();
+  const employeeName="";
+  const employeeNumber="";
+  const npsMaxLimitOld=0;
+  const npsMaxLimitNew=0;
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
+  const dateIn = new Date().toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  const dateInIST=dateIn.replace(/am|pm/i, match => match.toUpperCase());
   const handleDownloadPdf = async () => {
     try {
       setLoading(true);
@@ -229,6 +244,7 @@ const IncomeTaxCalculator = () => {
   });
 
   const [results, setResults] = useState(null);
+  const [employee, setEmployeeResults] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -270,7 +286,7 @@ const IncomeTaxCalculator = () => {
         
         if (response.data.success) {
           const employeeData = response.data.data;
-          
+         setEmployeeResults(response.data.data);
           // Update the input fields with API response data
           setInputs(prev => ({
             ...prev,
@@ -279,7 +295,10 @@ const IncomeTaxCalculator = () => {
             vpf: employeeData.vpf || 0,
             employernps80ccd1b: employeeData.npsMaxLimit || 0,
             fbp: employeeData.fbp || [],
-
+            npsMaxLimitOld:employeeData.npsMaxLimitOld||0,
+            npsMaxLimitNew:employeeData.npsMaxLimitNew||0,
+            employeeName:employeeData.employeeName,
+            employeeNumber:employeeData.employeeNumber
           }));
         }
       } catch (error) {
@@ -501,6 +520,8 @@ const IncomeTaxCalculator = () => {
           employernps80ccd1b: inputs.employernps80ccd1b || 0,
           fbp: totalFBP || 0,
           userids: userid || 0,
+          npsMaxLimitOld:npsMaxLimitOld||0,
+          npsMaxLimitNew:npsMaxLimitNew||0,
           fbpDetails: adjustedFBPDetails // Include the full FBP array in the payload
         }
       };
@@ -990,8 +1011,11 @@ const IncomeTaxCalculator = () => {
                 value={inputs.employernps80ccd1b || 0}
                 onValueChange={(values) => handleInputChange(values, 'employernps80ccd1b')}
                 thousandSeparator={true}
-                helperText=""
-                fullWidth
+                helperText={
+                  `NPS Max Limit For Old Tax Regime 10% & 14% For New Tax Regime On Basic & DA` +
+                  (employee?.npsMaxLimitOld > 0 ? ` | OLD: ₹${employee.npsMaxLimitOld}` : '') +
+                  (employee?.npsMaxLimitNew > 0 ? ` | NEW: ₹${employee.npsMaxLimitNew}` : '')
+                } fullWidth
               />
             </Box>
             
@@ -1486,7 +1510,6 @@ const IncomeTaxCalculator = () => {
           </Box>
         </StyledPaper>
       </motion.div>
-
       {/* Tax Breakup Dialog */}
       {selectedRegime && (
         <Dialog
@@ -1514,7 +1537,10 @@ const IncomeTaxCalculator = () => {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="h6" sx={{ fontWeight: '600' }}>
                   Detailed Tax Breakup - {selectedRegime === results?.oldRegime ? 'Old Regime' : 'New Regime'}
-                  
+                <br/>
+                <span>
+                {employee?.employeeName} ({employee?.employeeNumber})
+                </span>
                 </Typography>
                 <IconButton 
                   onClick={handleCloseBreakup}
@@ -1599,7 +1625,7 @@ const IncomeTaxCalculator = () => {
                         <TableRow>
                           <TableCell sx={{ fontWeight: '500' }}>(-) Other Chapter VI A</TableCell>
                           <TableCell align="right" sx={{ fontWeight: '600' }}>
-                            ₹{selectedRegime === results?.newRegime ? inputs.employernps80ccd1b : (inputs.chapterVIOthers || 0).toLocaleString('en-IN')}
+                          ₹{selectedRegime?.chapterVIOthers?.toLocaleString('en-IN') || 0}
                           </TableCell>
                         </TableRow>
                         
@@ -1730,6 +1756,7 @@ const IncomeTaxCalculator = () => {
                 </Box>
               </Box>
             </DialogContent>
+            <div align="left" style={{color:colors.error}}> {dateInIST}</div>
             <DialogActions sx={{ padding: '16px 24px' }}>
               <SecondaryButton 
                 onClick={handleCloseBreakup}
