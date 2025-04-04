@@ -1026,7 +1026,6 @@ const IncomeTaxCalculator = () => {
                 decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'employernps80ccd1b')}
                 thousandSeparator={true}
-                decimalScale={0}
                 helperText={
                   `NPS Max Limit For Old Tax Regime 10% & 14% For New Tax Regime On Basic & DA` +
                   (employee?.npsMaxLimitOld > 0 ? ` | OLD: ₹${employee.npsMaxLimitOld}` : '') +
@@ -1493,7 +1492,7 @@ const IncomeTaxCalculator = () => {
                           {' '}
                           Tax Regime
                         </span>{' '}
-                         Is Better For You
+                         Is Beneficial For You
                       </Typography>
                     </Box>
                   </motion.div>
