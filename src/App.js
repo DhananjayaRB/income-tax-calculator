@@ -619,6 +619,7 @@ const IncomeTaxCalculator = () => {
             variant="outlined"
             name={currentField.name}
             value={fieldValue}
+            decimalScale={0}
             onValueChange={(values) => handleInputChange(values, currentField.name)}
             thousandSeparator={true}
             InputLabelProps={{ 
@@ -676,6 +677,7 @@ const IncomeTaxCalculator = () => {
                             value={item.amount || 0}
                             onValueChange={(values) => handleFBPChange(index, values)}
                             thousandSeparator={true}
+                            decimalScale={0}
                             helperText={
                               <>
                                 <span>Max: ₹{item.maxLimit.toLocaleString('en-IN')}</span>
@@ -764,6 +766,7 @@ const IncomeTaxCalculator = () => {
                 value={inputs.pf || 0}
                 onValueChange={(values) => handleInputChange(values, 'pf')}
                 thousandSeparator={true}
+                decimalScale={0}
                 fullWidth
                 disabled
               />
@@ -773,6 +776,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="vpf"
                 value={inputs.vpf || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'vpf')}
                 thousandSeparator={true}
                 fullWidth
@@ -783,6 +787,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="others80C"
                 value={inputs.others80C || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'others80C')}
                 thousandSeparator={true}
                 fullWidth
@@ -805,6 +810,7 @@ const IncomeTaxCalculator = () => {
               variant="outlined"
               name="housingLoan"
               value={inputs.housingLoan || 0}
+              decimalScale={0}
               onValueChange={(values) => handleInputChange(values, 'housingLoan')}
               thousandSeparator={true}
               helperText={`Max limit: ₹2,00,000 (Current: ₹${inputs.housingLoan || 0})`}
@@ -836,6 +842,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="section80D"
                 value={inputs.section80D || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80D')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,00,000"
@@ -859,6 +866,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="section80DD"
                 value={inputs.section80DD || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80DD')}
                 thousandSeparator={true}
                 helperText="Max: ₹2,00,000"
@@ -884,6 +892,7 @@ const IncomeTaxCalculator = () => {
                 value={inputs.section80U || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80U')}
                 thousandSeparator={true}
+                decimalScale={0}
                 helperText="Max: ₹2,00,000"
                 fullWidth
                 InputProps={{
@@ -907,6 +916,7 @@ const IncomeTaxCalculator = () => {
                 value={inputs.section80DDB || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80DDB')}
                 thousandSeparator={true}
+                decimalScale={0}
                 helperText="Max: ₹1,40,000"
                 fullWidth
                 InputProps={{
@@ -928,6 +938,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="section80EEA"
                 value={inputs.section80EEA || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80EEA')}
                 thousandSeparator={true}
                 helperText="Max: ₹1,50,000"
@@ -953,6 +964,7 @@ const IncomeTaxCalculator = () => {
                 value={inputs.section80EEB || 0}
                 onValueChange={(values) => handleInputChange(values, 'section80EEB')}
                 thousandSeparator={true}
+                decimalScale={0}
                 helperText="Max: ₹1,50,000"
                 fullWidth
                 InputProps={{
@@ -974,6 +986,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="section80E"
                 value={inputs.section80E || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80E')}
                 thousandSeparator={true}
                 helperText="No limit"
@@ -987,6 +1000,7 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="section80CCD1B"
                 value={inputs.section80CCD1B || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80CCD1B')}
                 thousandSeparator={true}
                 helperText="Max: ₹50,000"
@@ -1009,8 +1023,10 @@ const IncomeTaxCalculator = () => {
                 variant="outlined"
                 name="employernps80ccd1b"
                 value={inputs.employernps80ccd1b || 0}
+                decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'employernps80ccd1b')}
                 thousandSeparator={true}
+                decimalScale={0}
                 helperText={
                   `NPS Max Limit For Old Tax Regime 10% & 14% For New Tax Regime On Basic & DA` +
                   (employee?.npsMaxLimitOld > 0 ? ` | OLD: ₹${employee.npsMaxLimitOld}` : '') +
