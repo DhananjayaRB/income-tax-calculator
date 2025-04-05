@@ -305,18 +305,19 @@ const PrimaryButton = styled(Button)(({ theme }) => ({
 }));
 
 const SecondaryButton = styled(Button)(({ theme }) => ({
-  border: '2px solid #4A00E0',
-  color: '#4A00E0',
+  border: '2px solid #028CA3',
+  color: '#028CA3',
   fontWeight: 600,
   padding: '12px 24px',
   borderRadius: '12px',
   textTransform: 'none',
   transition: 'all 0.3s ease',
   '&:hover': {
-    backgroundColor: 'rgba(74, 0, 224, 0.08)',
-    border: '2px solid #4A00E0'
+    backgroundColor: 'rgba(2, 140, 163, 0.08)',
+    border: '2px solid #028CA3'
   }
 }));
+
 
 const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
@@ -1328,7 +1329,7 @@ pdf.save(filename);
       '&:hover': { backgroundColor: '#388e3c' },
       fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
     }}>
-      Continue to Tax Comparisio
+      Continue to Tax Comparison
   </Button>
 </Box>
         </WelcomeCard>
