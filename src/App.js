@@ -870,8 +870,13 @@ pdf.save(filename);
                             helperText={
                               <>
                                 <span>Max: ₹{item.maxLimit.toLocaleString('en-IN')}</span>
-                                <br />
-                                <span>Allowed Regimes: {item.allowedTaxRegime === 3 || item.allowedTaxRegime === 0 ? 'Both' : item.allowedTaxRegime === 1 ? 'Old Regime' : 'New Regime'}</span>
+                                <span> | Allowed Regimes: {item.allowedTaxRegime === 3 || item.allowedTaxRegime === 0 ? 'Both' : item.allowedTaxRegime === 1 ? 'Old Regime' : 'New Regime'}</span>
+                                {item.criteriaOption !== "" && (
+                                  <>
+                                    <br />
+                                    <span>Choice Based: {item.criteriaOption}</span>
+                                  </>
+                                )}
                               </>
                             }
                             InputLabelProps={{ 
@@ -1283,40 +1288,90 @@ pdf.save(filename);
   borderRadius: '12px',
   backdropFilter: 'blur(5px)'
 }}>
-  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Key 2025 Budget Changes:</Typography>
-  
-  <Typography variant="subtitle2" sx={{ fontWeight: 500, mb: 1, color: '#e3f2fd' }}>
-    New vs. Old Regime (Effective April 1, 2025)
-  </Typography>
-  
+  <Grid container spacing={3}>
+        {/* Left Side - Key Pointers */}
+  <Grid item xs={12} md={5}>
   <Box component="ul" sx={{ pl: 2, '& li': { mb: 1, fontSize: '0.9rem' } }}>
-    <li><strong>New Regime Default:</strong> Now auto-selected with revised slabs</li>
+  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Key Pointers to your income tax computation</Typography>
+  
+    <li><strong>Default Regime - :</strong> New Regime would be auto-selected with revised Slabs</li>
     <li><strong>Standard Deduction:</strong> ₹75,000 (↑ from ₹50K) in New Regime</li>
     <li><strong>Rebate u/s 87A:</strong> ₹60K for income ≤ ₹12L (New Regime)</li>
-    <Box>
-    <li><strong>Tax Slabs (Old Regime):</strong>
-      <Box component="ul" sx={{ pl: 2, '& li': { mb: 0.5, fontSize: '0.8rem' } }}>
-        <li>Up to ₹2,50,000 (0%)</li>
-        <li>₹2,50,001 for ₹5,00,000 (5%)</li>
-        <li>₹5,00,001 for ₹10,00,000 (20%)</li>
-        <li>Above ₹10,00,001 (30%)</li>
-      </Box>
-    </li>
-    <li><strong>Tax Slabs (New Regime):</strong>
-    <Box component="ul" sx={{ pl: 2, '& li': { mb: 0.5, fontSize: '0.8rem' } }}>
-        <li>Up to ₹4,00,000 (0%)</li>
-        <li>₹4,00,001 for ₹8,00,000 (5%)</li>
-        <li>₹8,00,001 for ₹12,00,000 (10%)</li>
-        <li>₹12,00,001 for ₹16,00,000 (15%)</li>
-        <li>₹16,00,001 for ₹20,00,000 (20%)</li>
-        <li>₹20,00,001 for ₹24,00,000 (25%)</li>
-        <li>Above 24,00,000 (30%)</li>
-      </Box>
-    </li>
-    </Box>
     <li><strong>Surcharge:</strong> Reduced to 25% (from 37%) for income > ₹5Cr</li>
     <li><strong>Leave Encashment:</strong> ₹25L exemption for both regimes (↑ from ₹3L)</li>
   </Box>
+  </Grid>
+  <Grid item xs={12} md={7}>
+  <Box sx={{ mt: 2 }}>
+    <Typography variant="h6" gutterBottom fontWeight="bold">
+      Income Tax Slabs Comparison (Old vs New Regime)
+    </Typography>
+    <TableContainer component={Paper} sx={{ maxWidth: 600 }}>
+      <Table size="small" aria-label="tax slab comparison table">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc', fontWeight: 'bold' }}>Income Range</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc', fontWeight: 'bold' }}>Old Regime</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>New Regime</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>Up to ₹2,50,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>0%</TableCell>
+            <TableCell>-</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹2,50,001 – ₹4,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
+            <TableCell>0%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,00,001 – ₹5,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
+            <TableCell>5%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,00,001 – ₹8,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
+            <TableCell>5%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹8,00,001 – ₹10,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
+            <TableCell>10%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹10,00,001 – ₹12,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
+            <TableCell>10%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹12,00,001 – ₹16,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
+            <TableCell>15%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹16,00,001 – ₹20,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
+            <TableCell>20%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,00,001 – ₹24,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
+            <TableCell>25%</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>Above ₹24,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
+            <TableCell>30%</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+    </Box>
+    </Grid>
+    </Grid>
   
   <Button 
     variant="contained" 
