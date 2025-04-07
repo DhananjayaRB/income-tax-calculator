@@ -1141,14 +1141,14 @@ pdf.save(filename);
                 decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80D')}
                 thousandSeparator={true}
-                helperText="Max: ₹1,00,000"
+                helperText="Max: ₹75,000"
                 fullWidth
                 InputProps={{
                   endAdornment: (
                     <Chip 
                       label="Max" 
                       size="small" 
-                      onClick={() => handleInputChange({ floatValue: 100000 }, 'section80D')}
+                      onClick={() => handleInputChange({ floatValue: 75000 }, 'section80D')}
                       sx={{ cursor: 'pointer' }}
                     />
                   )
@@ -1672,7 +1672,7 @@ pdf.save(filename);
                             return sum + Math.min(amount, maxLimit);
                           }, 0).toLocaleString('en-IN')
                         }` :
-                          (inputs[field?.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : 'Not entered')
+                          (inputs[field?.name] ? `₹${Number(inputs[field.name]).toLocaleString('en-IN')}` : '')
                         }
                       </span>
                     </Typography>
