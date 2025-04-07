@@ -24,6 +24,12 @@ import Confetti from 'react-confetti';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import CryptoJS from 'crypto-js';
 
+const dotFlashing = keyframes`
+  0% { content: ''; }
+  33% { content: '.'; }
+  66% { content: '..'; }
+  100% { content: '...'; }
+`;
 
 // Animations
 const floatAnimation = keyframes`
@@ -511,8 +517,8 @@ pdf.save(filename);
   }, []);
 
   const inputFields = [
-    { label: 'Total Earnings', name: 'totalEarnings' },
-    { label: 'Rent Paid', name: 'hraPaid' },
+    { label: 'Total Earnings', name: 'totalEarnings',fieldLable:'Total Earnings' },
+    { label: 'Rent Paid', name: 'hraPaid',fieldLable:'Rent Paid Annualy'},
     { label: '80 C', name: 'section80C' },
     { label: 'Housing Loan', name: 'housingLoan' },
     { label: 'Other Chapter VI A', name: 'chapterVIOthers' },
@@ -635,7 +641,7 @@ pdf.save(filename);
         break;
       case 'section80DD':
       case 'section80U':
-        limitedValue = Math.min(value, 200000);
+        limitedValue = Math.min(value, 125000);
         break;
       case 'section80DDB':
         limitedValue = Math.min(value, 140000);
@@ -811,7 +817,91 @@ pdf.save(filename);
 
     switch(activeTab) {
       case 0: // Total Earnings
-      case 1: // Rent Paid
+      return (
+        <NumericFormat
+          customInput={TextField}
+          fullWidth
+          label={`${currentField.fieldLable} (₹)`}
+          variant="outlined"
+          name={currentField.name}
+          onValueChange={(values) => handleInputChange(values, currentField.name)}
+          value={fieldValue}
+          decimalScale={0}
+          disabled
+          thousandSeparator={true}
+          InputLabelProps={{ 
+            shrink: true,
+            style: {
+              color: colors.lightText,
+              fontWeight: '500'
+            }
+          }}
+          InputProps={{
+            style: {
+              fontSize: '16px',
+              backgroundColor: '#fff',
+              borderRadius: '12px'
+            }
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e2e8f0',
+              },
+              '&:hover fieldset': {
+                borderColor: colors.accent,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: colors.primary,
+                borderWidth: '2px'
+              },
+            }
+          }}
+        />
+      );
+      case 1://HRA
+        return (
+        <NumericFormat
+          customInput={TextField}
+          fullWidth
+          label={`${currentField.fieldLable} (₹)`}
+          variant="outlined"
+          name={currentField.name}
+          onValueChange={(values) => handleInputChange(values, currentField.name)}
+          value={fieldValue}
+          decimalScale={0}
+          disabled={employee?.id === 65}
+          thousandSeparator={true}
+          InputLabelProps={{ 
+            shrink: true,
+            style: {
+              color: colors.lightText,
+              fontWeight: '500'
+            }
+          }}
+          InputProps={{
+            style: {
+              fontSize: '16px',
+              backgroundColor: '#fff',
+              borderRadius: '12px'
+            }
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#e2e8f0',
+              },
+              '&:hover fieldset': {
+                borderColor: colors.accent,
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: colors.primary,
+                borderWidth: '2px'
+              },
+            }
+          }}
+        />
+      );
       case 5: // Other Sources Income
         return (
           <NumericFormat
@@ -1075,14 +1165,14 @@ pdf.save(filename);
                 decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'section80DD')}
                 thousandSeparator={true}
-                helperText="Max: ₹2,00,000"
+                helperText="Max: ₹1,25,000"
                 fullWidth
                 InputProps={{
                   endAdornment: (
                     <Chip 
                       label="Max" 
                       size="small" 
-                      onClick={() => handleInputChange({ floatValue: 200000 }, 'section80DD')}
+                      onClick={() => handleInputChange({ floatValue: 125000 }, 'section80DD')}
                       sx={{ cursor: 'pointer' }}
                     />
                   )
@@ -1099,14 +1189,14 @@ pdf.save(filename);
                 onValueChange={(values) => handleInputChange(values, 'section80U')}
                 thousandSeparator={true}
                 decimalScale={0}
-                helperText="Max: ₹2,00,000"
+                helperText="Max: ₹1,25,000"
                 fullWidth
                 InputProps={{
                   endAdornment: (
                     <Chip 
                       label="Max" 
                       size="small" 
-                      onClick={() => handleInputChange({ floatValue: 200000 }, 'section80U')}
+                      onClick={() => handleInputChange({ floatValue: 125000 }, 'section80U')}
                       sx={{ cursor: 'pointer' }}
                     />
                   )
@@ -1286,10 +1376,37 @@ pdf.save(filename);
       >
         <WelcomeCard>
           <Box position="relative" zIndex={1}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-              <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
-              Welcome, {employee?.employeeName} ({employee?.employeeNumber})
-            </Typography>
+          <Typography
+  variant="h5"
+  gutterBottom
+  sx={{
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+  }}
+>
+  <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
+  Welcome,&nbsp;
+  {employee?.employeeName ? (
+    <>
+      {employee.employeeName}
+      {employee.employeeNumber && ` (${employee.employeeNumber})`}
+    </>
+  ) : (
+    <span style={{ display: 'inline-flex' }}>
+      <span
+        style={{
+          display: 'inline-block',
+          width: '1.5em',
+          textAlign: 'left',
+          animation: 'dots 1.2s steps(3, end) infinite',
+        }}
+      >
+
+      </span>
+    </span>
+  )}
+</Typography>
             <Typography variant="body1" sx={{ mb: 2, fontSize: '0.9rem' }}>
               Here's your personalized tax planning dashboard for FY 2025-26
             </Typography>
