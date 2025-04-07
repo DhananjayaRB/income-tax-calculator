@@ -637,7 +637,7 @@ pdf.save(filename);
         limitedValue = Math.min(value, 200000);
         break;
       case 'section80D':
-        limitedValue = Math.min(value, 100000);
+        limitedValue = Math.min(value, 75000);
         break;
       case 'section80DD':
       case 'section80U':
