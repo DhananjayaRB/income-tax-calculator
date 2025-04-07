@@ -334,10 +334,11 @@ const decrypt = () => {
     const bytes = CryptoJS.AES.decrypt(getuserid, key)
     const decryptedUserId = bytes.toString(CryptoJS.enc.Utf8)
     tempUserid=decryptedUserId;
+    console.log("Decypted Text : " + tempUserid )
   }
 };
 decrypt();
-const userid=tempUserid;
+const userid=getuserid;
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
   const printRef = useRef();
