@@ -1037,30 +1037,6 @@ pdf.save(filename);
               <Typography variant="body1" color={colors.primary} fontWeight="600" mb={1}>
                 Max Eligibility: ₹1,50,000
               </Typography>
-              <Box display="flex" gap={1} mb={2} flexWrap="wrap">
-                <Button 
-                  variant="outlined" 
-                  onClick={() => handle80CButtonClick('pf')}
-                  sx={{ textTransform: 'none' }}
-                  disabled
-                >
-                  PF (₹{inputs.pf || 0})
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  onClick={() => handle80CButtonClick('vpf')}
-                  sx={{ textTransform: 'none' }}
-                >
-                  VPF (₹{inputs.vpf || 0})
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  onClick={() => handle80CButtonClick('others80C')}
-                  sx={{ textTransform: 'none' }}
-                >
-                  Others (₹{inputs.others80C || 0})
-                </Button>
-              </Box>
             </Box>
             <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2} mb={3}>
               <NumericFormat
@@ -1094,6 +1070,16 @@ pdf.save(filename);
                 decimalScale={0}
                 onValueChange={(values) => handleInputChange(values, 'others80C')}
                 thousandSeparator={true}
+                InputProps={{
+                  endAdornment: (
+                    <Chip 
+                      label="Max" 
+                      size="small" 
+                      onClick={() => handleInputChange({ floatValue: 150000 }, 'others80C')}
+                      sx={{ cursor: 'pointer' }}
+                    />
+                  )
+                }}
                 fullWidth
               />
             </Box>
