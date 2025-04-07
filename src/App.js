@@ -331,19 +331,27 @@ const API_BASE_URL = 'https://uat-api.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
 const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
-const pathSegments = window.location.pathname.split("/");
+const pathSegments = window.location.pathname.split("id/");
 var getuserid = pathSegments[pathSegments.length - 1]; 
-var tempUserid;
-const decrypt = () => {
-  const key = "TrtgdhYvbfdasmyghRchprcsvFsngabV";
-  if (getuserid) {
-    const bytes = CryptoJS.AES.decrypt(getuserid, key)
-    const decryptedUserId = bytes.toString(CryptoJS.enc.Utf8)
-    tempUserid=decryptedUserId;
-    console.log("Decypted Text : " + tempUserid )
-  }
+
+const skey = "TrtgdhYvbfdasmyghRchprcsvFsngabV"; // 32 chars
+const siv = "6581256789036528"; // 16 chars
+
+const decryptAES = (ciphertext, key, iv) => {
+  let keyUtf8 = CryptoJS.enc.Utf8.parse(key);
+  let ivUtf8 = CryptoJS.enc.Utf8.parse(iv);
+  let decrypted = CryptoJS.AES.decrypt({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) }, keyUtf8, {
+    iv: ivUtf8,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  getuserid = decrypted.toString(CryptoJS.enc.Utf8);
+  
+   console.log("Decrypted Password :" + getuserid);
 };
-decrypt();
+
+// Decrypt
+decryptAES(getuserid, skey, siv);
 const userid=getuserid;
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
