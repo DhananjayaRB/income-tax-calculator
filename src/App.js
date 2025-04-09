@@ -23,6 +23,8 @@ import { motion } from 'framer-motion';
 import Confetti from 'react-confetti';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import CryptoJS from 'crypto-js';
+import { Snackbar } from '@mui/material';
+
 
 const dotFlashing = keyframes`
   0% { content: ''; }
@@ -459,6 +461,7 @@ pdf.save(filename);
   });
 
   const [results, setResults] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
   const [employee, setEmployeeResults] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
@@ -631,6 +634,13 @@ pdf.save(filename);
     setShowWelcome(false);
   };
 
+  const handleButtonClick = () => {
+    if (employee?.isFySwitch !== 1) {
+      setShowAlert(true);
+      return;
+    }
+    handleContinue();
+  };
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -1521,9 +1531,7 @@ pdf.save(filename);
   
   <Button 
     variant="contained" 
-    onClick={() => {
-    handleContinue(); 
-  }}
+   onClick={handleButtonClick}
     sx={{ 
       mt: 2,
       backgroundColor: colors.warning, 
@@ -1532,6 +1540,21 @@ pdf.save(filename);
     }}>
       Continue to Tax Comparison
   </Button>
+  <Snackbar 
+        open={showAlert} 
+        autoHideDuration={10000} 
+        onClose={() => setShowAlert(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="warning" onClose={() => setShowAlert(false)} sx={{ 
+      mt: 2,
+      backgroundColor: colors.warning, 
+      '&:hover': { backgroundColor: '#388e3c' },
+      fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
+    }}>
+          You cannot continue. New Financial Year is not enabled for you.
+        </Alert>
+      </Snackbar>
 </Box>
         </WelcomeCard>
       </motion.div>
