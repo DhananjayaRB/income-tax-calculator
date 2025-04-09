@@ -329,7 +329,7 @@ const SecondaryButton = styled(Button)(({ theme }) => ({
 }));
 
 
-const API_BASE_URL = 'https://apiv1.resolvepay.in/payrun';
+const API_BASE_URL = 'https://uat.resolveindia.com/payrun';
 const API_ENDPOINT = '/income-tax';
 const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
