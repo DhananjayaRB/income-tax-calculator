@@ -24,7 +24,7 @@ import Confetti from 'react-confetti';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import CryptoJS from 'crypto-js';
 import { Snackbar } from '@mui/material';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // You can use any icon here
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const dotFlashing = keyframes`
   0% { content: ''; }
@@ -459,6 +459,37 @@ pdf.save(filename);
     };
   
 
+    const handleRating = (value) => {
+      setRating(value);
+      sendRatingToApi(value);
+    };
+  
+    const [rating, setRating] = useState(0);
+    const [submitted, setSubmitted] = useState(false);
+  
+    const handleRatingClick = (value) => {
+      setRating(value);
+      sendRatingToApi(value);
+    };
+  
+    const hearts = ['💔', '💖', '💗', '💓', '❤️'];
+    const labels = ['Disappointed', 'Liked', 'Loved it', 'Really Loved it', 'Absolutely Loved it!'];
+
+    const sendRatingToApi = async (value) => {
+      try {
+        const EMPLOYEE_DETAILS_RATINGS = 'updated-rating';
+        const response = await axios.get(`${API_BASE_URL}/${EMPLOYEE_DETAILS_RATINGS}/${userid}/${value}`);
+        if (response.ok) {
+          console.log('Rating submitted successfully');
+          setSubmitted(true);
+        } else {
+          console.error('Failed to submit rating');
+        }
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+      }
+    };
+
   // Initialize all input fields with 0 instead of empty string
   const [inputs, setInputs] = useState({
     totalEarnings: 0,
@@ -497,6 +528,7 @@ pdf.save(filename);
   const [showFireworks, setShowFireworks] = useState(false);
   const [particles, setParticles] = useState([]);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [hovered, setHovered] = useState(0); // <-- This is the one you're asking about
   const [dimensions, setDimensions] = useState({ 
     width: typeof window !== 'undefined' ? window.innerWidth : 0, 
     height: typeof window !== 'undefined' ? window.innerHeight : 0
@@ -2009,6 +2041,30 @@ pdf.save(filename);
                          Is Beneficial For You
                       </Typography>
                     </Box>
+                    <div style={{float:'right'}} className="max-w-sm mx-auto mt-16 p-6 bg-white rounded-2xl shadow-xl text-center space-y-4">
+                    <h5 className="text-2xl font-bold text-gray-400">How was your experience?</h5>
+                    <div className="flex justify-center space-x-2 mt-4">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <button
+                            key={num}
+                            onMouseEnter={() => setHovered(num)}
+                            onMouseLeave={() => setHovered(0)}
+                            onClick={() => handleRating(num)}
+                            className={`text-3xl transition-transform transform hover:scale-125 ${
+                              (hovered >= num || rating >= num) ? 'text-yellow-400' : 'text-gray-300'
+                            }`}
+                          >
+                            ⭐
+                          </button>
+                        ))}
+                      </div>
+
+                      {submitted && (
+                        <div className="mt-4 text-green-600 font-medium transition-opacity animate-fade-in">
+                          Thank you for your {rating}-star rating! 🌟
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 </Box>
               </>
