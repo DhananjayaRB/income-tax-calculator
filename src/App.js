@@ -365,8 +365,6 @@ const decryptAES = (ciphertext, key, iv) => {
     padding: CryptoJS.pad.Pkcs7,
   });
   getuserid = decrypted.toString(CryptoJS.enc.Utf8);
-  
-   console.log("Decrypted Password :" + getuserid);
 };
 
 // Decrypt
@@ -473,20 +471,13 @@ pdf.save(filename);
       sendRatingToApi(value);
       setSubmitted(true);
     };
-  
-    const hearts = ['💔', '💖', '💗', '💓', '❤️'];
-    const labels = ['Disappointed', 'Liked', 'Loved it', 'Really Loved it', 'Absolutely Loved it!'];
-
     const sendRatingToApi = async (value) => {
       try {
         const EMPLOYEE_DETAILS_RATINGS = 'updated-rating';
         const response = await axios.get(`${API_BASE_URL}/${EMPLOYEE_DETAILS_RATINGS}/${userid}/${value}`);
         if (response.ok) {
-          console.log('Rating submitted successfully');
           setSubmitted(true);
-        } else {
-          console.error('Failed to submit rating');
-        }
+        } 
       } catch (error) {
         console.error('Error submitting rating:', error);
       }
@@ -1429,7 +1420,7 @@ pdf.save(filename);
         transition={{ duration: 0.9 }}
         style={{ 
           width: '100%', 
-          marginBottom: '20px',
+          marginBottom: '10px',
           position: 'relative',
           zIndex: 1
         }}
@@ -1781,7 +1772,7 @@ pdf.save(filename);
                       display: 'flex',
                       color:colors.error,
                       justifyContent: 'space-between',
-                      fontsize: '10px',
+                      fontsize: '1px',
                       alignItems: 'center'
                     }}>
                         Disclaimer :
@@ -1853,7 +1844,7 @@ pdf.save(filename);
                 flexDirection="column"
                 alignItems="center" 
                 justifyContent="center" 
-                height="300px"
+                height="100px"
                 gap={2}
               >
                 <CircularProgress size={60} thickness={4} style={{ color: colors.primary }} />
@@ -1922,7 +1913,7 @@ pdf.save(filename);
                           size="small"
                           onClick={() => handleOpenBreakup(results.oldRegime)}
                           style={{
-                            marginTop: '8px',
+                            marginTop: '1px',
                             minWidth: '120px',
                             borderColor: colors.accent,
                             background:colors.warning,
@@ -1990,7 +1981,7 @@ pdf.save(filename);
                           size="small"
                           onClick={() => handleOpenBreakup(results.newRegime)}
                           style={{
-                            marginTop: '8px',
+                            marginTop: '1px',
                             minWidth: '120px',
                             borderColor: colors.accent,
                             background:colors.warning,
@@ -2010,7 +2001,7 @@ pdf.save(filename);
                   >
                     
                     <Box 
-                      p={3} 
+                      p={2} 
                       bgcolor={colors.highlight} 
                       borderRadius="12px"
                       textAlign="center"
@@ -2066,6 +2057,7 @@ pdf.save(filename);
                           <h5>Thank you for your {rating}-star rating! 🌟</h5>
                         </div>
                       )}
+
                     </div>
                   </motion.div>
                 </Box>
