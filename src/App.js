@@ -462,6 +462,7 @@ pdf.save(filename);
     const handleRating = (value) => {
       setRating(value);
       sendRatingToApi(value);
+      setSubmitted(true);
     };
   
     const [rating, setRating] = useState(0);
@@ -470,6 +471,7 @@ pdf.save(filename);
     const handleRatingClick = (value) => {
       setRating(value);
       sendRatingToApi(value);
+      setSubmitted(true);
     };
   
     const hearts = ['💔', '💖', '💗', '💓', '❤️'];
@@ -2060,8 +2062,8 @@ pdf.save(filename);
                       </div>
 
                       {submitted && (
-                        <div className="mt-4 text-green-600 font-medium transition-opacity animate-fade-in">
-                          Thank you for your {rating}-star rating! 🌟
+                        <div style={{float:'center'}} className="mt-4 text-green-600 font-medium transition-opacity animate-fade-in">
+                          <h5>Thank you for your {rating}-star rating! 🌟</h5>
                         </div>
                       )}
                     </div>
