@@ -24,7 +24,7 @@ import Confetti from 'react-confetti';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import CryptoJS from 'crypto-js';
 import { Snackbar } from '@mui/material';
-
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'; // You can use any icon here
 
 const dotFlashing = keyframes`
   0% { content: ''; }
@@ -294,6 +294,23 @@ const FloatingDownloadButton = muiStyled(IconButton)(({ theme }) => ({
   }
 }));
 
+const ExitButton = muiStyled(IconButton)(({ theme }) => ({
+  position: 'fixed',
+  top: theme.spacing(-1),
+  right: theme.spacing(1),
+  backgroundColor: theme.palette.primary.main,
+  color: 'white',
+  boxShadow: theme.shadows[6],
+  '&:hover': {
+    backgroundColor: theme.palette.primary.dark,
+    boxShadow: theme.shadows[8],
+    transform: 'scale(1.1)',
+  },
+  zIndex: 1000,
+  width: 50,
+  height: 50
+}));
+
 const PrimaryButton = styled(Button)(({ theme }) => ({
   background: 'linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%)',
   color: '#FFFFFF',
@@ -436,6 +453,11 @@ pdf.save(filename);
       setLoading(false);
     }
   };
+
+    const handleExit = () => {
+      window.location.href = 'https://services.resolvepay.in/dashboard/';
+    };
+  
 
   // Initialize all input fields with 0 instead of empty string
   const [inputs, setInputs] = useState({
@@ -1589,6 +1611,7 @@ pdf.save(filename);
         />
       )}
 
+
       {/* Left Panel - Input Form */}
       <motion.div
         variants={fadeInUp}
@@ -1768,6 +1791,26 @@ pdf.save(filename);
           flexShrink: 0
         }}
       >
+ <Tooltip title="Exit" placement="top">
+    <ExitButton
+      onClick={handleExit}
+       align="top"
+      disabled={loading}
+      sx={{ 
+        mt: 2,
+        backgroundColor: colors.error, 
+        '&:hover': { backgroundColor: colors.error },
+        fontWeight: '600', mr: 1
+      }}
+      aria-label="Exit"
+    >
+      {loading ? (
+        <CircularProgress size={24} color="inherit" />
+      ) : (
+        <ExitToAppIcon  />
+      )}
+    </ExitButton>
+  </Tooltip>
         <StyledPaper elevation={0}>
           <Box p={isMobile ? 2 : 3}>
             {loading ? (
