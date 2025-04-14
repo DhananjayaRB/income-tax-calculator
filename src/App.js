@@ -350,9 +350,10 @@ const API_BASE_URL = 'https://apiv1.resolvepay.in/payrun';
 const API_ENDPOINT = '/income-tax';
 const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
-const pathSegments = window.location.pathname.split("id/");
-var getuserid = pathSegments[pathSegments.length - 1]; 
-var getuseridNew = pathSegments[pathSegments.length - 1]; 
+
+const params = new URLSearchParams(window.location.search);
+var getuserid = params.get("uid");
+var getuseridNew =params.get("uid");
 var getNewUser=0;
 const skey = "TrtgdhYvbfdasmyghRchprcsvFsngabV"; // 32 chars
 const siv = "6581256789036528"; // 16 chars
@@ -366,7 +367,6 @@ const decryptAES = (ciphertext, key, iv) => {
     padding: CryptoJS.pad.Pkcs7,
   });
   getuserid = decrypted.toString(CryptoJS.enc.Utf8);
-  getNewUser=decrypted.toString(CryptoJS.enc.Utf8);
 };
 
 // Decrypt
@@ -1922,7 +1922,7 @@ pdf.save(filename);
                             marginTop: '1px',
                             minWidth: '120px',
                             borderColor: colors.accent,
-                            background:colors.warning,
+                            background:colors.border,
                             color: colors.darkBlue
                           }}
                         >
@@ -1988,7 +1988,7 @@ pdf.save(filename);
                           onClick={() => handleOpenBreakup(results.newRegime)}
                           style={{
                             marginTop: '1px',
-                            minWidth: '120px',
+                            minWidth: '100px',
                             borderColor: colors.accent,
                             background:colors.warning,
                             color: colors.darkBlue
