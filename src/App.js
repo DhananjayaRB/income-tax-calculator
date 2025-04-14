@@ -352,7 +352,8 @@ const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
 const pathSegments = window.location.pathname.split("id/");
 var getuserid = pathSegments[pathSegments.length - 1]; 
-
+var getuseridNew = pathSegments[pathSegments.length - 1]; 
+var getNewUser=0;
 const skey = "TrtgdhYvbfdasmyghRchprcsvFsngabV"; // 32 chars
 const siv = "6581256789036528"; // 16 chars
 
@@ -365,10 +366,15 @@ const decryptAES = (ciphertext, key, iv) => {
     padding: CryptoJS.pad.Pkcs7,
   });
   getuserid = decrypted.toString(CryptoJS.enc.Utf8);
+  getNewUser=decrypted.toString(CryptoJS.enc.Utf8);
 };
 
 // Decrypt
 decryptAES(getuserid, skey, siv);
+if(getuserid == '')
+  {
+       decryptAES('/'+getuseridNew, skey, siv);
+  }
 const userid=getuserid;
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
