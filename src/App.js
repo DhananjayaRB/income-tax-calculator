@@ -225,7 +225,7 @@ const WelcomeCard = muiStyled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
   marginBottom: theme.spacing(4),
   borderRadius: '16px',
-  background: 'linear-gradient(135deg, #4A00E0 0%, #8E2DE2 100%)',
+  background: 'linear-gradient(135deg, #02569B 0%, #13B9FD 100%)', // light blue-grey,
   color: 'white',
   position: 'relative',
   overflow: 'hidden',
@@ -1873,7 +1873,7 @@ pdf.save(filename);
                         p={3}
                         sx={{
                           background: results.suggestion === 'OLD' 
-                          ? 'linear-gradient(135deg, #ace1af  0%, #74c365 100%)'  // Green success gradient
+                          ? 'linear-gradient(135deg, #02569B 0%, #13B9FD 100%)'  // Green success gradient
                           : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'OLD' 
                             ? `2px solid ${colors.white}` 
@@ -1898,20 +1898,20 @@ pdf.save(filename);
                           position: "absolute",
                           top: "-10px",
                           right: "-4px",
-                          color: colors.darkBlue, 
+                          color: colors.secondary, 
                           fontSize: 30,
                         }}  />
                       )}
                         <Typography style={{ 
                           fontWeight: '600',
-                          color: colors.darkBlue
+                          color: results.suggestion === 'OLD'?colors.white:colors.darkBlue
                         }}>
                           Old Regime
                         </Typography>
                         <Typography variant="h4" style={{ 
                           margin: '12px 0',
                           fontWeight: '700',
-                          color: colors.darkBlue
+                          color: results.suggestion === 'OLD'?colors.white:colors.darkBlue
                         }}>
                           ₹{results?.oldRegime?.totalTaxWithCess?.toLocaleString('en-IN') || 0}
                         </Typography>
@@ -1941,7 +1941,7 @@ pdf.save(filename);
                         p={3}
                         sx={{
                           background: results.suggestion === 'NEW' 
-                          ? 'linear-gradient(135deg, #ace1af  0%, #74c365 100%)'  // Green success gradient
+                          ? 'linear-gradient(135deg, #02569B 0%, #13B9FD 100%)'  // Green success gradient
                           : 'linear-gradient(135deg, #f4f0ec , #bebebe   )',
                           border: results.suggestion === 'NEW' 
                             ? `2px solid ${colors.white}` 
@@ -1966,20 +1966,20 @@ pdf.save(filename);
                           position: "absolute",
                           top: "-10px",
                           right: "-4px",
-                          color: colors.darkBlue, 
+                          color: colors.secondary, 
                           fontSize: 30,
                         }}  />
                       )}
                         <Typography style={{ 
                           fontWeight: '600',
-                          color: colors.darkBlue
+                          color: results.suggestion === 'NEW'?colors.white:colors.darkBlue
                         }}>
                           New Regime
                         </Typography>
                         <Typography variant="h4" style={{ 
                           margin: '12px 0',
                           fontWeight: '700',
-                          color: colors.darkBlue
+                          color: results.suggestion === 'NEW'?colors.white:colors.darkBlue
                         }}>
                           ₹{results?.newRegime?.totalTaxWithCess?.toLocaleString('en-IN') || 0}
                         </Typography>
