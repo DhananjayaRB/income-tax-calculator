@@ -352,8 +352,15 @@ const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
 
 
 const params = new URLSearchParams(window.location.search);
-var getuserid = params.get("uid");
-var getuseridNew =params.get("uid");
+var url = params.get("uid");
+const cleanedPath = url
+  .replaceAll("_00001111222_", "")
+  .replaceAll("_00001111222", "");
+
+var getuserid = cleanedPath;
+var getuseridNew =cleanedPath;
+
+
 var getNewUser=0;
 const skey = "TrtgdhYvbfdasmyghRchprcsvFsngabV"; // 32 chars
 const siv = "6581256789036528"; // 16 chars
@@ -369,12 +376,6 @@ const decryptAES = (ciphertext, key, iv) => {
   getuserid = decrypted.toString(CryptoJS.enc.Utf8);
 };
 
-// Decrypt
-decryptAES(getuserid, skey, siv);
-if(getuserid == '')
-  {
-       decryptAES('/'+getuseridNew, skey, siv);
-  }
 const userid=getuserid;
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
