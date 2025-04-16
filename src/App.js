@@ -1,3 +1,4 @@
+/* eslint-env es2020 */
 import React, { useState, useEffect, useRef } from 'react';
 import { Grid } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -348,35 +349,106 @@ const SecondaryButton = styled(Button)(({ theme }) => ({
 
 const API_BASE_URL = 'https://apiv1.resolvepay.in/payrun';
 const API_ENDPOINT = '/income-tax';
-const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details';
-
+const EMPLOYEE_DETAILS_ENDPOINT = '/get-employee-details-ency';
 
 const params = new URLSearchParams(window.location.search);
 var url = params.get("uid");
-const cleanedPath = url
-  .replaceAll("_00001111222_", "")
-  .replaceAll("_00001111222", "");
 
-var getuserid = cleanedPath;
-var getuseridNew =cleanedPath;
-
-
+var getuserid=0;
 var getNewUser=0;
 const skey = "TrtgdhYvbfdasmyghRchprcsvFsngabV"; // 32 chars
 const siv = "6581256789036528"; // 16 chars
 
-const decryptAES = (ciphertext, key, iv) => {
-  let keyUtf8 = CryptoJS.enc.Utf8.parse(key);
-  let ivUtf8 = CryptoJS.enc.Utf8.parse(iv);
-  let decrypted = CryptoJS.AES.decrypt({ ciphertext: CryptoJS.enc.Base64.parse(ciphertext) }, keyUtf8, {
+// Base62 charset
+const BASE62_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+// Utility: Convert WordArray → Uint8Array
+const wordArrayToUint8Array = (wordArray) => {
+  const words = wordArray.words;
+  const sigBytes = wordArray.sigBytes;
+  const u8 = new Uint8Array(sigBytes);
+  for (let i = 0; i < sigBytes; i++) {
+    u8[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+  }
+  return u8;
+};
+
+// Utility: Convert Uint8Array → WordArray
+const uint8ArrayToWordArray = (u8arr) => {
+  const words = [];
+  for (let i = 0; i < u8arr.length; i++) {
+    words[i >>> 2] |= u8arr[i] << (24 - (i % 4) * 8);
+  }
+  return CryptoJS.lib.WordArray.create(words, u8arr.length);
+};
+
+// Base62 encode
+const toBase62 = (u8arr) => {
+  let value = BigInt("0x" + [...u8arr].map(b => b.toString(16).padStart(2, '0')).join(''));
+  if (value === 0n) return "0";
+  let result = '';
+  while (value > 0n) {
+    const rem = value % 62n;
+    result = BASE62_CHARS[Number(rem)] + result;
+    value = value / 62n;
+  }
+  return result;
+};
+
+// Base62 decode
+const fromBase62 = (str) => {
+  let value = 0n;
+  for (let i = 0; i < str.length; i++) {
+    value = value * 62n + BigInt(BASE62_CHARS.indexOf(str[i]));
+  }
+
+  let hex = value.toString(16);
+  if (hex.length % 2 !== 0) hex = '0' + hex;
+
+  const u8arr = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < u8arr.length; i++) {
+    u8arr[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+
+  return u8arr;
+};
+
+// AES Encrypt (Base62 output)
+const encryptAES = (text, key, iv) => {
+  const keyUtf8 = CryptoJS.enc.Utf8.parse(key);
+  const ivUtf8 = CryptoJS.enc.Utf8.parse(iv);
+
+  const encrypted = CryptoJS.AES.encrypt(text, keyUtf8, {
     iv: ivUtf8,
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   });
-  getuserid = decrypted.toString(CryptoJS.enc.Utf8);
+
+  const bytes = wordArrayToUint8Array(encrypted.ciphertext);
+  return toBase62(bytes);
 };
 
-const userid=getuserid;
+// AES Decrypt (Base62 input)
+const decryptAES = (base62Text, key, iv) => {
+  const keyUtf8 = CryptoJS.enc.Utf8.parse(key);
+  const ivUtf8 = CryptoJS.enc.Utf8.parse(iv);
+
+  const u8arr = fromBase62(base62Text);
+  const wordArray = uint8ArrayToWordArray(u8arr);
+  const decrypted = CryptoJS.AES.decrypt({ ciphertext: wordArray }, keyUtf8, {
+    iv: ivUtf8,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+
+  return decrypted.toString(CryptoJS.enc.Utf8);
+};
+
+const encrypted = encryptAES("58368", skey, siv);
+
+const decrypted = decryptAES(encrypted, skey, siv);
+
+const userid=url;
 const IncomeTaxCalculator = () => {
   const theme = useTheme();
   const printRef = useRef();
@@ -563,11 +635,11 @@ pdf.save(filename);
           // Update the input fields with API response data
           setInputs(prev => ({
             ...prev,
-            totalEarnings: employeeData.totalEarnings || 0,
-            pf: employeeData.pf || 0,
-            vpf: employeeData.vpf || 0,
-            employernps80ccd1b: employeeData.npsMaxLimit || 0,
-            fbp: employeeData.fbp || []
+            totalEarnings: employeeData?.totalEarnings || 0,
+            pf: employeeData?.pf || 0,
+            vpf: employeeData?.vpf || 0,
+            employernps80ccd1b: employeeData?.npsMaxLimit || 0,
+            fbp: employeeData?.fbp || []
           }));
         }
       } catch (error) {
@@ -1605,8 +1677,7 @@ pdf.save(filename);
       backgroundColor: colors.warning, 
       '&:hover': { backgroundColor: '#388e3c' },
       fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
-    }}>
-          You cannot continue. New Financial Year is not enabled for you.
+    }}>   Access Denied, Please Contact Support
         </Alert>
       </Snackbar>
 </Box>
