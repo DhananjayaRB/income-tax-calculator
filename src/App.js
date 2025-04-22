@@ -1589,57 +1589,57 @@ pdf.save(filename);
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹2,50,001 – ₹4,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>0%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹7,500</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>-</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,00,001 – ₹5,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹25,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹25,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,00,001 – ₹8,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,60,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹40,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹15,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹8,00,001 – ₹10,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>10%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹2,00,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹40,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹10,00,001 – ₹12,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>10%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹3,60,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹12,00,001 – ₹16,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>15%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,80,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹2,40,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹16,00,001 – ₹20,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹6,00,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹80,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,00,001 – ₹24,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>25%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹7,20,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹6,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,00,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>Above ₹24,00,000</TableCell>
