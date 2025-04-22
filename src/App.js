@@ -1631,7 +1631,7 @@ pdf.save(filename);
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹16,00,001 – ₹20,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹8,00,000</TableCell>
+            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹6,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,00,000</TableCell>
           </TableRow>
           <TableRow>
