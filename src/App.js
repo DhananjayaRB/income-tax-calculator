@@ -26,6 +26,7 @@ import CelebrationIcon from '@mui/icons-material/Celebration';
 import CryptoJS from 'crypto-js';
 import { Snackbar } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ClipLoader from "react-spinners/ClipLoader";
 
 const dotFlashing = keyframes`
   0% { content: ''; }
@@ -628,20 +629,20 @@ pdf.save(filename);
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}${EMPLOYEE_DETAILS_ENDPOINT}/${userid}`);
+          if (response.data.success) {
+            const employeeData = response.data.data;
+           setEmployeeResults(response.data.data);
+            // Update the input fields with API response data
+            setInputs(prev => ({
+              ...prev,
+              totalEarnings: employeeData?.totalEarnings || 0,
+              pf: employeeData?.pf || 0,
+              vpf: employeeData?.vpf || 0,
+              employernps80ccd1b: employeeData?.npsMaxLimit || 0,
+              fbp: employeeData?.fbp || []
+            }));
+          }
         
-        if (response.data.success) {
-          const employeeData = response.data.data;
-         setEmployeeResults(response.data.data);
-          // Update the input fields with API response data
-          setInputs(prev => ({
-            ...prev,
-            totalEarnings: employeeData?.totalEarnings || 0,
-            pf: employeeData?.pf || 0,
-            vpf: employeeData?.vpf || 0,
-            employernps80ccd1b: employeeData?.npsMaxLimit || 0,
-            fbp: employeeData?.fbp || []
-          }));
-        }
       } catch (error) {
         console.error('Error fetching employee details:', error);
         setError('Failed to fetch employee details. Using default values.');
@@ -649,7 +650,6 @@ pdf.save(filename);
         setLoading(false);
       }
     };
-
     fetchEmployeeDetails();
   }, []);
 
@@ -1516,26 +1516,18 @@ pdf.save(filename);
   }}
 >
   <CelebrationIcon sx={{ mr: 1, animation: `${floatAnimation} 3s ease-in-out infinite` }} />
-  Welcome,&nbsp;
+  
+  
   {employee?.employeeName ? (
     <>
+      Welcome,&nbsp;
       {employee.employeeName}
       {employee.employeeNumber && ` (${employee.employeeNumber})`}
     </>
   ) : (
-    <span style={{ display: 'inline-flex' }}>
-      <span
-        style={{
-          display: 'inline-block',
-          width: '1.5em',
-          textAlign: 'left',
-          animation: 'dots 1.2s steps(3, end) infinite',
-        }}
-      >
-
-      </span>
-    </span>
+    <><Typography variant="body1" sx={{ mb: 2, fontSize: '2rem',color:colors.warning }}> Loading Please Wait...&nbsp;</Typography></> 
   )}
+  
 </Typography>
             <Typography variant="body1" sx={{ mb: 2, fontSize: '0.9rem' }}>
               Here's your personalized tax planning dashboard for FY 2025-26
@@ -1573,8 +1565,6 @@ pdf.save(filename);
             <TableCell sx={{ borderRight: '1px solid #ccc', fontWeight: 'bold' }}>Income Range</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc', fontWeight: 'bold' }}>Old Regime</TableCell>
             <TableCell sx={{ fontWeight: 'bold' }}>New Regime</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Old Tax Rate</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>New Tax Rate</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -1582,71 +1572,51 @@ pdf.save(filename);
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>Up to ₹2,50,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>0%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>0%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>-</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>-</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹2,50,001 – ₹4,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>0%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹7,500</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>-</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹4,00,001 – ₹5,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹5,00,001 – ₹8,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>5%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹15,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹8,00,001 – ₹10,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>10%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹40,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹10,00,001 – ₹12,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>10%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹12,00,001 – ₹16,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>15%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹60,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹16,00,001 – ₹20,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>20%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹80,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹20,00,001 – ₹24,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>25%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,20,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹1,00,000</TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>Above ₹24,00,000</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
             <TableCell sx={{ borderRight: '1px solid #ccc' }}>30%</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹7,20,000</TableCell>
-            <TableCell sx={{ borderRight: '1px solid #ccc' }}>₹7,20,000</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -1654,7 +1624,8 @@ pdf.save(filename);
     </Box>
     </Grid>
     </Grid>
-  
+    { employee?.employeeName ? (
+        <>
   <Button 
     variant="contained" 
    onClick={handleButtonClick}
@@ -1666,6 +1637,13 @@ pdf.save(filename);
     }}>
       Continue to Tax Comparison
   </Button>
+        </>
+      ) : (
+        <ClipLoader color={colors.warning} loading={true} size={50} />
+      )}
+
+
+
   <Snackbar 
         open={showAlert} 
         autoHideDuration={10000} 
@@ -1677,7 +1655,7 @@ pdf.save(filename);
       backgroundColor: colors.warning, 
       '&:hover': { backgroundColor: '#388e3c' },
       fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
-    }}>   Access Denied, Please Contact Support
+    }}>   { employee?.isFySwitch !==1? employee?.message:"Access Denied, Please Contact Support"}
         </Alert>
       </Snackbar>
 </Box>
