@@ -1526,7 +1526,7 @@ pdf.save(filename);
   </>
 ) : employee?.isFySwitch !== 1 ? (
    <Typography variant="body1" sx={{ mb: 1.5, fontSize: '1.5rem', color: colors.warning }}>
-   Payroll Cut Off Date is Crossed, Please Check Next Month . 
+   Payroll Cut Off Date is Crossed, Please Check Next Month. 
   </Typography>
 ) : (
   <Typography variant="body1" sx={{ mb: 2, fontSize: '2rem', color: colors.warning }}>
