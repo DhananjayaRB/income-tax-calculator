@@ -1519,14 +1519,20 @@ pdf.save(filename);
   
   
   {employee?.employeeName ? (
-    <>
-      Welcome,&nbsp;
-      {employee.employeeName}
-      {employee.employeeNumber && ` (${employee.employeeNumber})`}
-    </>
-  ) : (
-    <><Typography variant="body1" sx={{ mb: 2, fontSize: '2rem',color:colors.warning }}> Loading Please Wait...&nbsp;</Typography></> 
-  )}
+  <>
+    Welcome,&nbsp;
+    {employee.employeeName}
+    {employee.employeeNumber && ` (${employee.employeeNumber})`}
+  </>
+) : employee?.isFySwitch !== 1 ? (
+   <Typography variant="body1" sx={{ mb: 1.5, fontSize: '1.5rem', color: colors.warning }}>
+   Payroll Cut Off Date is Crossed, Please Check Next Month . 
+  </Typography>
+) : (
+  <Typography variant="body1" sx={{ mb: 2, fontSize: '2rem', color: colors.warning }}>
+    Loading Please Wait...&nbsp;
+  </Typography>
+)}
   
 </Typography>
             <Typography variant="body1" sx={{ mb: 2, fontSize: '0.9rem' }}>
@@ -1655,7 +1661,7 @@ pdf.save(filename);
       backgroundColor: colors.warning, 
       '&:hover': { backgroundColor: '#388e3c' },
       fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
-    }}>   { employee?.isFySwitch !==1? employee?.message:"Access Denied, Please Contact Support"}
+    }}>   { employee?.isFySwitch !==1? employee?.message:"Payroll Cut Off Date is Crossed, Please Check Next Month ."}
         </Alert>
       </Snackbar>
 </Box>
