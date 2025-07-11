@@ -1524,7 +1524,7 @@ pdf.save(filename);
     {employee.employeeName}
     {employee.employeeNumber && ` (${employee.employeeNumber})`}
   </>
-) : employee?.isFySwitch !== 1 ? (
+) : employee?.isFySwitch === 0 ? (
    <Typography variant="body1" sx={{ mb: 1.5, fontSize: '1.5rem', color: colors.warning }}>
    Payroll Cut Off Date is Crossed, Please Check Next Month. 
   </Typography>
@@ -1661,7 +1661,7 @@ pdf.save(filename);
       backgroundColor: colors.warning, 
       '&:hover': { backgroundColor: '#388e3c' },
       fontWeight: '600', mr: 1, animation: `${floatAnimation} 2s ease-in-out infinite`
-    }}>   { employee?.isFySwitch !==1? employee?.message:"Payroll Cut Off Date is Crossed, Please Check Next Month ."}
+    }}>   { employee?.isFySwitch !==1? employee?.message:"Loading...."}
         </Alert>
       </Snackbar>
 </Box>
