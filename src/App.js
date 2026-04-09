@@ -862,7 +862,7 @@ pdf.save(filename);
       }));
 
       const payload = {
-        financialYear: '2025-2026',
+        financialYear: '2026-2027',
         incomeDetails: {
           totalEarnings: inputs.totalEarnings || 0,
           hraPaid: inputs.hraPaid || 0,

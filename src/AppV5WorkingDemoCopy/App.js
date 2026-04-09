@@ -71,7 +71,7 @@ const IncomeTaxCalculator = () => {
     
     try {
       const payload = {
-        financialYear: '2025-2026',
+        financialYear: '2026-2027',
         incomeDetails: {
           ...inputs,
           totalEarnings: inputs.totalEarnings || 0,
