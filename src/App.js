@@ -1536,7 +1536,7 @@ pdf.save(filename);
   
 </Typography>
             <Typography variant="body1" sx={{ mb: 2, fontSize: '0.9rem' }}>
-              Here's your personalized tax planning dashboard for FY 2025-26
+              Here's your personalized tax planning dashboard for FY 2026-27
             </Typography>
           </Box>
           
@@ -1721,7 +1721,7 @@ pdf.save(filename);
         </Typography>
        <Typography 
        sx={{ mb: -1, fontSize: '0.8rem' , color:colors.warning,marginLeft:'30px'}}>
-        Here's your personalized tax planning dashboard for FY 2025-26
+        Here's your personalized tax planning dashboard for FY 2026-27
       </Typography>
       </Box>
               <Button
